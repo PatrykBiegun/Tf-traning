@@ -1,0 +1,10 @@
+{
+  "appId": "com.tftraning.quasar.app",
+  "appName": "Tf-traning",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "www",
+  "server": {
+    "url": "http://155.158.59.136:8080"
+  }
+}

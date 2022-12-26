@@ -1,0 +1,7 @@
+{
+  "appId": "com.tftraning.quasar.app",
+  "appName": "Tf-traning",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "www"
+}

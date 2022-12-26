@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Tf-traning</string>
+    <string name="title_activity_main">Tf-traning</string>
+    <string name="package_name">com.tftraning.quasar.app</string>
+    <string name="custom_url_scheme">com.tftraning.quasar.app</string>
+</resources>

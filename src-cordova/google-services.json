@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "778623128896",
+    "firebase_url": "https://tf-traning-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "tf-traning",
+    "storage_bucket": "tf-traning.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:778623128896:android:a0a34ebc63a873b9fc56a5",
+        "android_client_info": {
+          "package_name": "com.tftraning.biegun"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "778623128896-nqkcpca1f52dk4hk96uk3cpo7lm9jhbl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjKxUmYNPm1nwDc99w_KFP4eh4hKouWP4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "778623128896-nqkcpca1f52dk4hk96uk3cpo7lm9jhbl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
