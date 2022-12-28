@@ -179,6 +179,17 @@ export default defineComponent({
           localStorage.setItem("calories", ppm);
           localStorage.setItem("water", ppm);
         }
+        localStorage.setItem("waterLeft", 0);
+        localStorage.setItem("carbsLeft", 0);
+        localStorage.setItem("fatLeft", 0);
+        localStorage.setItem("caloriesLeft", 0);
+        localStorage.setItem("proteinLeft", 0);
+        localStorage.setItem("proteinBar", 0);
+        localStorage.setItem("fatBar", 0);
+        localStorage.setItem("caloriesBar", 0);
+        localStorage.setItem("carbsBar", 0);
+        localStorage.setItem("dailyfood", {});
+        localStorage.setItem("access", "true");
 
         console.log(gender, weight, height, age, target);
       }

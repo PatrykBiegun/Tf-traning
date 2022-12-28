@@ -43,10 +43,20 @@
             <q-item clickable v-ripple to="/" class="col-4 flex-center"
               >Dane</q-item
             >
-            <q-item clickable v-ripple to="/traning" class="col-4 flex-center"
+            <q-item
+              :disable="access != 'true'"
+              clickable
+              v-ripple
+              to="/traning"
+              class="col-4 flex-center"
               >Trening</q-item
             >
-            <q-item clickable v-ripple to="/diet" class="col-4 flex-center"
+            <q-item
+              :disable="access != 'true'"
+              clickable
+              v-ripple
+              to="/diet"
+              class="col-4 flex-center"
               >Dieta</q-item
             >
           </div>
@@ -54,25 +64,62 @@
       </q-toolbar>
     </q-footer>
 
-    <q-footer bordered class="bg-grey-8 text-white mobile-only">
+    <q-footer bordered class="bg-grey-8 text-white mobile-only fixed-bottom">
       <q-toolbar>
         <q-toolbar-title>
           <div class="col-12 row" id="menu">
             <q-item clickable v-ripple to="/" class="col-3 flex-center"
               >Dane</q-item
             >
-            <q-item clickable v-ripple to="/traning" class="col-3 flex-center"
+
+            <q-item
+              :disable="access != 'true'"
+              clickable
+              v-ripple
+              to="/traning"
+              class="col-3 flex-center"
               >Trening</q-item
             >
-            <q-item clickable v-ripple to="/diet" class="col-3 flex-center"
+            <q-item
+              :disable="access != 'true'"
+              clickable
+              v-ripple
+              to="/diet"
+              class="col-3 flex-center"
               >Dieta</q-item
             >
 
-            <q-item clickable v-ripple to="/water" class="col-3 flex-center"
+            <q-item
+              :disable="access != 'true'"
+              clickable
+              v-ripple
+              to="/water"
+              class="col-3 flex-center"
               >Woda</q-item
             >
           </div>
         </q-toolbar-title>
+        <!-- <q-tabs
+          v-model="tab"
+          no-caps
+          outside-arrows
+          mobile-arrows
+          class="bg-orange text-white shadow-2"
+        >
+          <div class="row" id="menu">
+            <q-item clickable v-ripple to="/" class="flex-center">Dane</q-item>
+            <q-item clickable v-ripple to="/traning" class="flex-center"
+              >Trening</q-item
+            >
+            <q-item clickable v-ripple to="/diet" class="flex-center"
+              >Dieta</q-item
+            >
+
+            <q-item clickable v-ripple to="/water" class="flex-center"
+              >Woda</q-item
+            >
+          </div>
+        </q-tabs> -->
       </q-toolbar>
     </q-footer>
   </q-layout>
@@ -81,45 +128,44 @@
 <script>
 import { ref } from "vue";
 import { date } from "vue";
+import { useQuasar } from "quasar";
+import { onBeforeUnmount } from "vue";
 
 export default {
-  methods: {
-    pushNot() {
-      let button = document.querySelector("button");
-
-      button.addEventListener("click", () => {
-        Notification.requestPermission().then((perm) => {
-          if (perm === "granted") {
-            const notification = new Notification("Example notification", {
-              body: "mess",
-            });
-
-            notification.addEventListener("error", (e) => {
-              alert("error");
-            });
-          }
-        });
-      });
-
-      let notification;
-      let interval;
-      document.addEventListener("visibilitychange", () => {
-        if (document.visibilityState === "hidden") {
-          const leaveDate = new Date();
-          interval = setInterval(() => {
-            body: {
-              Math.round((new Date() - leaveDate) / 1000);
-            }
-            seconds;
-            tag: " nie wiem ";
-          });
-        } else {
-          clearInterval(interval);
-          notification.close();
-        }
-      });
-    },
-  },
+  // methods: {
+  // pushNot() {
+  //   let button = document.querySelector("button");
+  //   button.addEventListener("click", () => {
+  //     Notification.requestPermission().then((perm) => {
+  //       if (perm === "granted") {
+  //         const notification = new Notification("Example notification", {
+  //           body: "mess",
+  //         });
+  //         notification.addEventListener("error", (e) => {
+  //           alert("error");
+  //         });
+  //       }
+  //     });
+  //   });
+  //   let notification;
+  //   let interval;
+  //   document.addEventListener("visibilitychange", () => {
+  //     if (document.visibilityState === "hidden") {
+  //       const leaveDate = new Date();
+  //       interval = setInterval(() => {
+  //         body: {
+  //           Math.round((new Date() - leaveDate) / 1000);
+  //         }
+  //         seconds;
+  //         tag: " nie wiem ";
+  //       });
+  //     } else {
+  //       clearInterval(interval);
+  //       notification.close();
+  //     }
+  //   });
+  // },
+  // },
 
   setup() {
     const leftDrawerOpen = ref(false);
@@ -138,7 +184,40 @@ export default {
     };
   },
 
-  data: () => ({}),
+  data: () => ({
+    access: localStorage.getItem("access"),
+  }),
+
+  // mounted() {
+  //   const $q = useQuasar();
+  //   let timer;
+
+  //   onBeforeUnmount(() => {
+  //     if (timer !== void 0) {
+  //       clearTimeout(timer);
+  //       $q.loading.hide();
+  //     }
+  //   });
+  //   const date = new Date();
+  //   const day = date.getMinutes();
+
+  //   if (parseFloat(localStorage.getItem("today")) != day) {
+  //     $q.loading.show({
+  //       message: "<b>Nowy dzień, nowe możliwości!</b>",
+  //       html: true,
+  //     });
+
+  //     timer = setTimeout(() => {
+  //       $q.loading.hide();
+  //       timer = void 0;
+  //     }, 3000);
+  //     localStorage.setItem("today", day);
+  //     localStorage.setItem("waterLeft", 0);
+  //     setTimeout(() => {
+  //       document.location.reload();
+  //     }, 3000);
+  //   }
+  // },
 };
 </script>
 

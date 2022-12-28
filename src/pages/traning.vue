@@ -1,7 +1,6 @@
 <template>
   <q-page class="flex flex-center">
-    <div class="welcome">Trening</div>
-    <q-select
+    <!-- <q-select
       use-chips
       class="q-mt-xs q-ma-xs"
       filled
@@ -22,11 +21,62 @@
         <div class="col">{{ workout.cw4 }}</div>
       </div>
     </div>
+  -->
+    <div id="timer">00:00</div>
+    <div class="fixed-bottom" style="text-align: center; margin-bottom: 15vw">
+      <div class="q-mb-xl">
+        <q-input
+          square
+          outlined
+          label="Długość przerw"
+          type="number"
+          class="col-3 q-pa-sm"
+          v-model="breakTime"
+        />
+        <q-input
+          square
+          outlined
+          type="number"
+          label="Długość ćwiczeń"
+          class="col-3 q-pa-sm"
+          v-model="workoutTime"
+        />
+        <q-input
+          square
+          outlined
+          label="Ilość serii "
+          type="number"
+          class="col-3 q-pa-sm"
+          v-model="amountSelect"
+        />
+        <div class="q-mt-xl">
+          <q-btn
+            color="green"
+            :disable="this.timerProgress != 0 && this.stoperTime != 0"
+            @click="startTrening(breakTime, workoutTime, amountSelect)"
+            >Start</q-btn
+          >
+          &NonBreakingSpace;
+          <q-btn color="red" @click="resettraning()">Reset</q-btn>
+        </div>
+      </div>
+      <q-circular-progress
+        show-value
+        class="stoper"
+        :value="stoperTime"
+        size="70vw"
+        :color="this.colors"
+      >
+        <q-avatar size="40vw"> {{ this.timerProgress }} </q-avatar>
+      </q-circular-progress>
+    </div>
   </q-page>
 </template>
 
 <script>
 import db from "src/boot/firebase";
+import { useQuasar } from "quasar";
+import { onBeforeUnmount } from "vue";
 import {
   snapshot,
   collection,
@@ -42,6 +92,32 @@ export default {
   name: "TrainingPage",
 
   setup() {
+    let $q = useQuasar();
+    let timer;
+
+    onBeforeUnmount(() => {
+      if (timer !== void 0) {
+        clearTimeout(timer);
+        $q.loading.hide();
+      }
+    });
+
+    function resettraning() {
+      $q.loading.show({
+        message: "<b>Reset</b>",
+        html: true,
+      });
+
+      timer = setTimeout(() => {
+        $q.loading.hide();
+        timer = void 0;
+      }, 1000);
+
+      setTimeout(() => {
+        document.location.reload();
+      }, 1000);
+    }
+
     const loading = ref([false, false, false, false, false, false]);
 
     const progress = ref(false);
@@ -61,12 +137,49 @@ export default {
       loading,
       progress,
       simulateProgress,
+      resettraning,
     };
   },
 
   methods: {
-    smieci() {
-      this.workouts.push();
+    startTrening(breakLength, workoutLength, amount) {
+      this.stoperTime = 0;
+      this.timerProgress = 0;
+
+      let minutes = (1 * 100) / workoutLength;
+      let breakminutes = (1 * 100) / breakLength;
+      let phase = 0;
+      // minutes = Math.round(minutes);
+      var timer;
+
+      timer = setInterval(() => {
+        if (amount != 0) {
+          if (phase == 0) {
+            this.colors = "red";
+            this.stoperTime = parseFloat(this.stoperTime) + parseFloat(minutes);
+
+            if (this.timerProgress != workoutLength) {
+              this.timerProgress++;
+            } else {
+              phase = 1;
+              this.timerProgress = parseFloat(breakLength) + 1;
+            }
+          } else if (phase == 1) {
+            this.colors = "green";
+            this.stoperTime =
+              parseFloat(this.stoperTime) - parseFloat(breakminutes);
+            if (this.stoperTime <= 0) {
+              this.stoperTime = 0;
+              phase = 0;
+              amount--;
+            }
+            if (this.timerProgress != 0) this.timerProgress--;
+          }
+        } else {
+          this.timerProgress = "💪";
+          clearInterval(timer);
+        }
+      }, 1000);
     },
 
     load_workouts() {
@@ -90,9 +203,15 @@ export default {
   },
 
   data: () => ({
+    colors: "red",
+    breakTime: 0,
+    workoutTime: 0,
+    amountSelect: 0,
+    timerProgress: 0,
+    stoperTime: 0,
     workouts: [],
     temp_workouts: [],
-    workoutSelect: null,
+    workoutSelect: 0,
   }),
 
   mounted() {
@@ -119,5 +238,12 @@ export default {
   /* identical to box height */
 
   color: #000000;
+}
+
+.q-input {
+  height: 50px;
+
+  text-align: center;
+  align-content: center;
 }
 </style>

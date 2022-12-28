@@ -1,20 +1,21 @@
 <template>
   <q-page class="flex flex-center">
     <div class="title">WODA</div>
-    <div class="info">Twoje dziennie zapotrzebowanie na wodę to</div>
-    <div class="water">{{ this.waterAmount }} ml</div>
-    <div class="q-pt-xl">jedno kliknięcie to 200ml</div>
+    <div class="info">
+      Twoje dziennie zapotrzebowanie na wodę to<br />
+      {{ this.waterAmount }} ml <br />
+      <b> jedno kliknięcie to 200ml</b>
+    </div>
 
     <q-circular-progress
       show-value
       class="text-light-blue q-ma-md"
       :value="water"
-      size="400px"
+      size="80vw"
       color="light-blue"
-      @click="slider"
+      @click="slider()"
     />
-    <q-btn @click="reset()">{{ waterleft }} </q-btn>
-    <q-btn @click="reset()">{{ water }} </q-btn>
+
     <!-- <div class="funfact">Woda jest mokra</div> -->
   </q-page>
 </template>
@@ -28,22 +29,22 @@ export default defineComponent({
 
   data: () => ({
     waterAmount: localStorage.getItem("water"),
-    waterleft: localStorage.getItem("water") / 200,
-    savedwater: localStorage.getItem("water"),
-    water: localStorage.getItem("savedwater"),
+
+    water: parseFloat(localStorage.getItem("waterLeft")),
   }),
 
   methods: {
     slider() {
       let temp_water, temp_water2;
-      temp_water2 = this.water;
-      temp_water = Math.round(this.waterleft);
-      this.water = Math.round(temp_water2 + temp_water);
-      localStorage.setItem("waterleft", this.water);
+      temp_water = Math.round((100 * 200) / localStorage.getItem("water"));
+      temp_water2 = localStorage.getItem("waterLeft");
+
+      this.water = Math.round(parseFloat(temp_water2) + parseFloat(temp_water));
+      localStorage.setItem("waterLeft", this.water);
     },
 
     reset() {
-      localStorage.setItem("savedwater", 0);
+      localStorage.setItem("waterLeft", 0);
     },
   },
 });
