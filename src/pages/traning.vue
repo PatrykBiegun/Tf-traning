@@ -22,13 +22,13 @@
       </div>
     </div>
   -->
-    <div id="timer">00:00</div>
+
     <div class="fixed-bottom" style="text-align: center; margin-bottom: 15vw">
       <div class="q-mb-xl">
         <q-input
           square
           outlined
-          label="Długość przerw"
+          label="Długość przerw (sekundy)"
           type="number"
           class="col-3 q-pa-sm"
           v-model="breakTime"
@@ -37,7 +37,7 @@
           square
           outlined
           type="number"
-          label="Długość ćwiczeń"
+          label="Długość ćwiczeń (sekundy)"
           class="col-3 q-pa-sm"
           v-model="workoutTime"
         />
@@ -52,7 +52,7 @@
         <div class="q-mt-xl">
           <q-btn
             color="green"
-            :disable="this.timerProgress != 0 && this.stoperTime != 0"
+            :disable="this.disable"
             @click="startTrening(breakTime, workoutTime, amountSelect)"
             >Start</q-btn
           >
@@ -145,7 +145,7 @@ export default {
     startTrening(breakLength, workoutLength, amount) {
       this.stoperTime = 0;
       this.timerProgress = 0;
-
+      this.disable = true;
       let minutes = (1 * 100) / workoutLength;
       let breakminutes = (1 * 100) / breakLength;
       let phase = 0;
@@ -176,6 +176,7 @@ export default {
             if (this.timerProgress != 0) this.timerProgress--;
           }
         } else {
+          this.disable = false;
           this.timerProgress = "💪";
           clearInterval(timer);
         }
@@ -203,10 +204,11 @@ export default {
   },
 
   data: () => ({
+    disable: false,
     colors: "red",
-    breakTime: 0,
-    workoutTime: 0,
-    amountSelect: 0,
+    breakTime: 15,
+    workoutTime: 45,
+    amountSelect: 1,
     timerProgress: 0,
     stoperTime: 0,
     workouts: [],

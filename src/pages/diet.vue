@@ -1,14 +1,15 @@
 <template>
   <q-page class="flex flex-center">
-    <div
-      class="q-pa-sm q-mt-xl fullscreen"
-      style="max-height: 40vw; background-color: aquamarine"
-    >
+    <div class="q-pa-sm q-mt-xl fullscreen" style="max-height: 40vw">
       <q-banner class="foodBaner"
         >Kalorie <br />
         {{ this.caloriesLeft }} / {{ this.calories }}</q-banner
       >
-      <q-linear-progress :value="this.caloriesBar" class="q-mt-md" />
+      <q-linear-progress
+        :value="this.caloriesBar"
+        class="q-mt-md"
+        color="green"
+      />
       <q-banner class="foodBaner"
         >Białko <br />
         {{ this.proteinLeft }} / {{ this.protein }}</q-banner
@@ -33,13 +34,19 @@
         color="secondary"
         class="q-mt-sm"
       />
-
-      <q-btn
-        class="q-mt-md q-mb-md fixed-center"
-        label="Dodaj nowe jedzenie"
-        @click="openFoodArray()"
-        style="z-index: 2"
-      ></q-btn>
+      <div style="text-align: center">
+        <q-btn
+          class="q-mt-md q-mb-md fixed-center"
+          label="Dodaj nowy produkt"
+          @click="openFoodArray()"
+          style="z-index: 2"
+        ></q-btn>
+        <q-btn
+          class="q-mt-md q-mb-md"
+          label="Zobacz dzisiejsze produkty"
+          @click="openTodayFoodArray()"
+        ></q-btn>
+      </div>
     </div>
 
     <div
@@ -71,7 +78,44 @@
     </div>
   </q-page>
 
-  <q-dialog v-model="foodarray" persistent>
+  <q-dialog v-model="todaysFoodArray">
+    <q-card class="q-pa-md" style="width: 1800px">
+      <div v-for="food in TodaysFood" :key="food.id" type="table">
+        <div class="col-md-2 col-xs-12">
+          <div class="col-12 row flex mobile-only">
+            <div class="col-10">> {{ food }}</div>
+          </div>
+          <div class="col-md-3 col-xs-12 desktop-only q-mt-sm">>{{ food }}</div>
+        </div>
+      </div>
+      <q-btn flat label="Cofnij" v-close-popup />
+    </q-card>
+  </q-dialog>
+
+  <q-dialog v-model="addYourFood">
+    <q-card class="q-pa-md" style="width: 1800px">
+      <div style="width: 80vw; text-align: center">
+        <q-input label="Nazwa" v-model="Addname"></q-input>
+        <q-input label="Kalorie" type="number" v-model="Addcalories"> </q-input>
+        <q-input label="Białko" type="number" v-model="Addprotein"></q-input>
+        <q-input label="Węgle" type="number" v-model="Addcarbs"></q-input>
+        <q-input label="Tłuszcze" type="number" v-model="Addfat"></q-input>
+      </div>
+      <div class="mobilebuttons">
+        <q-btn flat label="Cofnij" v-close-popup />
+        <q-btn
+          flat
+          @click="
+            openAmountArray(Addname, Addprotein, Addcarbs, Addfat, Addcalories)
+          "
+          label="Dodaj"
+          v-close-popup
+        />
+      </div>
+    </q-card>
+  </q-dialog>
+
+  <q-dialog v-model="foodarray">
     <q-card class="q-pa-md" style="width: 1800px">
       <div class="col">
         <q-card-actions class="text-black">
@@ -96,6 +140,9 @@
           </div>
           <div class="q-pa-md col-xs-12 col-md-12">
             <q-list class="rounded-borders">
+              <q-btn @click="this.addYourFood = true"
+                >Dodaj swój własny produkt?
+              </q-btn>
               <b>każda pozycja oznacza 100g produktu</b>
               <b>
                 <div class="row desktop-only">
@@ -184,7 +231,10 @@
   <q-dialog v-model="amountArray" persistent
     ><q-card class="q-pa-md" style="width: 1800px">
       <div>
-        <div>Ile chcesz dodać produktu {{ this.temp_name }}?</div>
+        <div>
+          Ile chcesz dodać produktu {{ this.temp_name }}? <br />
+          <b>Każda pozycja oznacza 100g produktu</b>
+        </div>
         <div class="foodBaner">
           <q-btn
             dense
@@ -230,6 +280,9 @@ export default defineComponent({
   name: "IndexPage",
 
   data: () => ({
+    TodaysFood: [],
+    showTodayFood: localStorage.getItem("dailyfood"),
+
     types: [
       { name: "Wszystkie", kategoria: "" },
       { name: "Mięso", kategoria: "mieso" },
@@ -246,6 +299,12 @@ export default defineComponent({
     carbsLeft: localStorage.getItem("carbsLeft"),
     fat: localStorage.getItem("fat"),
     fatLeft: localStorage.getItem("fatLeft"),
+
+    Addcalories: 0,
+    Addcarbs: 0,
+    Addfat: 0,
+    Addprotein: 0,
+    Addname: "",
 
     caloriesBar: localStorage.getItem("caloriesBar"),
     proteinBar: localStorage.getItem("proteinBar"),
@@ -267,6 +326,13 @@ export default defineComponent({
   }),
 
   methods: {
+    openTodayFoodArray() {
+      let foodArray = localStorage.getItem("dailyfood");
+      foodArray = foodArray.split(",");
+      this.TodaysFood = foodArray;
+      this.todaysFoodArray = true;
+    },
+
     addfoodToTable() {
       for (let i = 1; i <= this.amount; i++) {
         this.temp_food.push({
@@ -286,12 +352,19 @@ export default defineComponent({
         this.fatLeft = parseFloat(this.temp_fat) + parseFloat(this.fatLeft);
       }
 
+      console.log(localStorage.getItem("dailyfood"));
       this.caloriesBar =
         Math.round((100 * this.caloriesLeft) / this.calories) + "%";
       this.proteinBar =
         Math.round((100 * this.proteinLeft) / this.protein) + "%";
       this.fatBar = Math.round((100 * this.fatLeft) / this.fat) + "%";
       this.carbBar = Math.round((100 * this.carbsLeft) / this.carbs) + "%";
+
+      let set = localStorage.getItem("dailyfood");
+
+      set = set.concat(",", this.temp_name);
+
+      localStorage.setItem("dailyfood", set);
 
       localStorage.setItem("farBar", this.fatBar),
         localStorage.setItem("proteinBar", this.proteinBar),
@@ -302,7 +375,6 @@ export default defineComponent({
         localStorage.setItem("proteinLeft", this.proteinLeft);
       localStorage.setItem("carbsLeft", this.carbsLeft),
         localStorage.setItem("fatLeft", this.fatLeft),
-        localStorage.setItem("dailyFood", this.temp_food),
         (this.amount = 1);
     },
 
@@ -371,7 +443,9 @@ export default defineComponent({
 
     return {
       foodarray: ref(false),
+      todaysFoodArray: ref(false),
       amountArray: ref(false),
+      addYourFood: ref(false),
 
       progress1,
       progressLabel1: computed(() => (progress1.value * 100).toFixed(2) + "%"),

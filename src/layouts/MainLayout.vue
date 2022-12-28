@@ -188,36 +188,46 @@ export default {
     access: localStorage.getItem("access"),
   }),
 
-  // mounted() {
-  //   const $q = useQuasar();
-  //   let timer;
+  mounted() {
+    const $q = useQuasar();
+    let timer;
 
-  //   onBeforeUnmount(() => {
-  //     if (timer !== void 0) {
-  //       clearTimeout(timer);
-  //       $q.loading.hide();
-  //     }
-  //   });
-  //   const date = new Date();
-  //   const day = date.getMinutes();
+    onBeforeUnmount(() => {
+      if (timer !== void 0) {
+        clearTimeout(timer);
+        $q.loading.hide();
+      }
+    });
+    const date = new Date();
+    const day = date.getDate();
 
-  //   if (parseFloat(localStorage.getItem("today")) != day) {
-  //     $q.loading.show({
-  //       message: "<b>Nowy dzień, nowe możliwości!</b>",
-  //       html: true,
-  //     });
+    if (parseFloat(localStorage.getItem("today")) != day) {
+      $q.loading.show({
+        message: "<b>Nowy dzień, nowe możliwości!</b>",
+        html: true,
+      });
 
-  //     timer = setTimeout(() => {
-  //       $q.loading.hide();
-  //       timer = void 0;
-  //     }, 3000);
-  //     localStorage.setItem("today", day);
-  //     localStorage.setItem("waterLeft", 0);
-  //     setTimeout(() => {
-  //       document.location.reload();
-  //     }, 3000);
-  //   }
-  // },
+      timer = setTimeout(() => {
+        $q.loading.hide();
+        timer = void 0;
+      }, 3000);
+      localStorage.setItem("today", day);
+      localStorage.setItem("waterLeft", 0);
+      localStorage.setItem("carbsLeft", 0);
+      localStorage.setItem("fatLeft", 0);
+      localStorage.setItem("caloriesLeft", 0);
+      localStorage.setItem("proteinLeft", 0);
+      localStorage.setItem("proteinBar", 0);
+      localStorage.setItem("fatBar", 0);
+      localStorage.setItem("caloriesBar", 0);
+      localStorage.setItem("carbsBar", 0);
+      localStorage.setItem("dailyfood", "Twoje dzisiejsze produkty!");
+
+      setTimeout(() => {
+        document.location.reload();
+      }, 3000);
+    }
+  },
 };
 </script>
 

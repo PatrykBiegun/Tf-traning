@@ -118,102 +118,120 @@ export default defineComponent({
     const progress = ref(false);
 
     function setVar(number, gender, weight, height, age, target) {
-      let ppm = 10 * weight + 6.25 * height - 5 * age + 5;
+      if (
+        gender != 0 &&
+        weight >= 20 &&
+        height >= 80 &&
+        age >= 8 &&
+        target != 0
+      ) {
+        let ppm = 10 * weight + 6.25 * height - 5 * age + 5;
 
-      if (gender !== 1) {
-        ppm = ppm - 166;
-      }
-      if (ppm <= 0) {
-        ppm = "błąd, prowadz prawidłowe wartości";
-        localStorage.setItem("protein", 0);
-        localStorage.setItem("fat", 0);
-        localStorage.setItem("carbs", 0);
-        localStorage.setItem("calories", 0);
-      } else {
-        if (target == 1) {
-          localStorage.setItem("ppm", ppm);
-          ppm = ppm + 100;
-          let protein = (ppm * 0.23) / 4;
-
-          let fat = (ppm * 0.2) / 9;
-          let carb = (ppm * 0.57) / 4;
-
-          protein = protein.toFixed(2);
-          fat = fat.toFixed(2);
-          carb = carb.toFixed(2);
-
-          localStorage.setItem("protein", protein);
-          localStorage.setItem("fat", fat);
-          localStorage.setItem("carbs", carb);
-          localStorage.setItem("calories", ppm);
-          localStorage.setItem("water", ppm);
-        } else if (target == 2) {
-          localStorage.setItem("ppm", ppm);
-          ppm = ppm + 500;
-          let protein = (ppm * 0.2) / 4;
-          let fat = (ppm * 0.3) / 9;
-          let carb = (ppm * 0.5) / 4;
-
-          protein = protein.toFixed(2);
-          fat = fat.toFixed(2);
-          carb = carb.toFixed(2);
-
-          localStorage.setItem("protein", protein);
-          localStorage.setItem("fat", fat);
-          localStorage.setItem("carbs", carb);
-          localStorage.setItem("calories", ppm);
-          localStorage.setItem("water", ppm);
-        } else if (target == 3) {
-          localStorage.setItem("ppm", ppm);
-          ppm = ppm + 250;
-          let protein = (ppm * 0.2) / 4;
-          let fat = (ppm * 0.3) / 9;
-          let carb = (ppm * 0.5) / 4;
-
-          protein = protein.toFixed(2);
-          fat = fat.toFixed(2);
-          carb = carb.toFixed(2);
-          localStorage.setItem("protein", protein);
-          localStorage.setItem("fat", fat);
-          localStorage.setItem("carbs", carb);
-          localStorage.setItem("calories", ppm);
-          localStorage.setItem("water", ppm);
+        if (gender !== 1) {
+          ppm = ppm - 166;
         }
-        localStorage.setItem("waterLeft", 0);
-        localStorage.setItem("carbsLeft", 0);
-        localStorage.setItem("fatLeft", 0);
-        localStorage.setItem("caloriesLeft", 0);
-        localStorage.setItem("proteinLeft", 0);
-        localStorage.setItem("proteinBar", 0);
-        localStorage.setItem("fatBar", 0);
-        localStorage.setItem("caloriesBar", 0);
-        localStorage.setItem("carbsBar", 0);
-        localStorage.setItem("dailyfood", {});
-        localStorage.setItem("access", "true");
+        if (ppm <= 0) {
+          ppm = "błąd, prowadz prawidłowe wartości";
+          localStorage.setItem("protein", 0);
+          localStorage.setItem("fat", 0);
+          localStorage.setItem("carbs", 0);
+          localStorage.setItem("calories", 0);
+        } else {
+          if (target == 1) {
+            localStorage.setItem("ppm", ppm);
+            ppm = ppm + 100;
+            let protein = (ppm * 0.23) / 4;
 
-        console.log(gender, weight, height, age, target);
+            let fat = (ppm * 0.2) / 9;
+            let carb = (ppm * 0.57) / 4;
+
+            protein = protein.toFixed(2);
+            fat = fat.toFixed(2);
+            carb = carb.toFixed(2);
+
+            localStorage.setItem("protein", protein);
+            localStorage.setItem("fat", fat);
+            localStorage.setItem("carbs", carb);
+            localStorage.setItem("calories", ppm);
+            localStorage.setItem("water", ppm);
+          } else if (target == 2) {
+            localStorage.setItem("ppm", ppm);
+            ppm = ppm + 500;
+            let protein = (ppm * 0.2) / 4;
+            let fat = (ppm * 0.3) / 9;
+            let carb = (ppm * 0.5) / 4;
+
+            protein = protein.toFixed(2);
+            fat = fat.toFixed(2);
+            carb = carb.toFixed(2);
+
+            localStorage.setItem("protein", protein);
+            localStorage.setItem("fat", fat);
+            localStorage.setItem("carbs", carb);
+            localStorage.setItem("calories", ppm);
+            localStorage.setItem("water", ppm);
+          } else if (target == 3) {
+            localStorage.setItem("ppm", ppm);
+            ppm = ppm + 250;
+            let protein = (ppm * 0.2) / 4;
+            let fat = (ppm * 0.3) / 9;
+            let carb = (ppm * 0.5) / 4;
+
+            protein = protein.toFixed(2);
+            fat = fat.toFixed(2);
+            carb = carb.toFixed(2);
+            localStorage.setItem("protein", protein);
+            localStorage.setItem("fat", fat);
+            localStorage.setItem("carbs", carb);
+            localStorage.setItem("calories", ppm);
+            localStorage.setItem("water", ppm);
+          }
+          localStorage.setItem("waterLeft", 0);
+          localStorage.setItem("carbsLeft", 0);
+          localStorage.setItem("fatLeft", 0);
+          localStorage.setItem("caloriesLeft", 0);
+          localStorage.setItem("proteinLeft", 0);
+          localStorage.setItem("proteinBar", 0);
+          localStorage.setItem("fatBar", 0);
+          localStorage.setItem("caloriesBar", 0);
+          localStorage.setItem("carbsBar", 0);
+          localStorage.setItem("dailyfood", "Twoje dzisiejsze produkty!");
+          localStorage.setItem("access", "true");
+
+          console.log(gender, weight, height, age, target);
+        }
+        $q.loading.show({
+          message: "<b>To zajmie tylko chwilkę</b>",
+          html: true,
+        });
+
+        // hiding in 3s
+        timer = setTimeout(() => {
+          $q.loading.hide();
+          timer = void 0;
+        }, 3000);
+
+        setTimeout(() => {
+          document.location.reload();
+        }, 3000);
+      } else {
+        $q.loading.show({
+          message: "<b>To zajmie tylko chwilkę</b>",
+          html: true,
+        });
+
+        timer = setTimeout(() => {
+          $q.loading.hide();
+          timer = void 0;
+        }, 2000);
+
+        timer = setTimeout(() => {
+          $q.notify({
+            message: "Musisz poprawnie uzupełnić wszystkie dane!",
+            color: "error",
+          });
+        }, 3000);
       }
-      $q.loading.show({
-        message: "<b>To zajmie tylko chwilkę</b>",
-        html: true,
-      });
-
-      // hiding in 3s
-      timer = setTimeout(() => {
-        $q.loading.hide();
-        timer = void 0;
-      }, 3000);
-
-      // timer = setTimeout(() => {
-      //   $q.notify({
-      //     message: "Twoje Dane zostały wprowadzone do systemu",
-      //     color: "lighblue",
-      //   });
-      // }, 4000);
-
-      setTimeout(() => {
-        document.location.reload();
-      }, 3000);
     }
 
     return {
