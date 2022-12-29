@@ -5,10 +5,9 @@
         <!-- <q-btn dense flat round  @click="toggleLeftDrawer" /> -->
 
         <q-toolbar-title>
-          <q-avatar>
-            <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg" />
-          </q-avatar>
-          Title
+          <q-avatar> <q-img src="../statics/icon3.png" /></q-avatar>
+
+          TF-traning
         </q-toolbar-title>
 
         <!-- <q-btn dense flat round icon="menu" @click="toggleRightDrawer" /> -->
@@ -36,7 +35,7 @@
       <router-view />
     </q-page-container>
 
-    <q-footer bordered class="bg-grey-8 text-white">
+    <q-footer bordered class="bg-amber-10 text-white">
       <q-toolbar>
         <q-toolbar-title>
           <div class="col-12 row" id="menu">
@@ -63,8 +62,40 @@
         </q-toolbar-title>
       </q-toolbar>
     </q-footer>
+    <q-footer class="q-mb-xl" v-if="shownotifications == 'true'">
+      <q-toolbar class="bg-grey-3 justify-between">
+        <q-icon name="eva-bell-outline" color="primary" size="xl" />
 
-    <q-footer bordered class="bg-grey-8 text-white mobile-only fixed-bottom">
+        <q-btn
+          @click="enableNotifications"
+          label="Tak"
+          color="primary"
+          dense
+          flat
+          size="md"
+        />
+        <q-btn
+          @click="shownotifications = false"
+          label="Potem"
+          color="primary"
+          class="q-px-sm"
+          dense
+          flat
+          size="md"
+        />
+        <q-btn
+          @click="neverShowNotificationsBanner()"
+          label="Nigdy"
+          color="primary"
+          class="q-px-sm"
+          dense
+          flat
+          size="md"
+        />
+      </q-toolbar>
+    </q-footer>
+
+    <q-footer bordered class="bg-amber-10 text-white mobile-only fixed-bottom">
       <q-toolbar>
         <q-toolbar-title>
           <div class="col-12 row" id="menu">
@@ -126,12 +157,43 @@
 </template>
 
 <script>
+import { openDB } from "idb";
 import { ref } from "vue";
 import { date } from "vue";
 import { useQuasar } from "quasar";
 import { onBeforeUnmount } from "vue";
 
 export default {
+  computed: {
+    serviceWorkerSupported() {
+      if ("serviceWorker" in navigator) return true;
+      return false;
+    },
+    pushNotificationsSupported() {
+      if ("PushManager" in window) return true;
+      return false;
+    },
+  },
+  methods: {
+    neverShowNotificationsBanner() {
+      this.shownotifications = "false";
+      localStorage.setItem("showNotifications", "false");
+    },
+
+    enableNotifications() {
+      if (this.pushNotificationsSupported) {
+        Notification.requestPermission((result) => {
+          console.log("result: ", result);
+          this.neverShowNotificationsBanner();
+          if (result == "granted") {
+            // this.displayGrantedNotification()
+            this.checkForExistingPushSubscription();
+          }
+        });
+      }
+    },
+  },
+
   // methods: {
   // pushNot() {
   //   let button = document.querySelector("button");
@@ -185,10 +247,15 @@ export default {
   },
 
   data: () => ({
+    shownotifications: localStorage.getItem("showNotifications"),
     access: localStorage.getItem("access"),
   }),
 
   mounted() {
+    ScreenOrientation.lock(portrait);
+    lock(portrait);
+    screen.orientation.lock(); // webkit only
+    screen.lockOrientation("portrait-primary");
     const $q = useQuasar();
     let timer;
 
@@ -240,5 +307,9 @@ button {
   padding: 0.5rem 1.5rem;
   font-size: 3rem;
   border-radius: 5px;
+}
+
+* {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 </style>

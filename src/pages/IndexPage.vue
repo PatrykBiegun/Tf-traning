@@ -1,13 +1,10 @@
 <template>
-  <q-page class="flex flex-center">
-    <div class="welcome">WITAJ</div>
-    <div class="info">
-      Dziękuję Ci za zainstalowanie mojej aplikacji, stwożyłem ją aby pomagać
-      ludziom w osiaganiu ich celów związanych ze zdrowszym trybem życia, aby
-      rozpocząć będę musiał się dowiedzieć kilku podstawowych rzeczy
-    </div>
+  <q-page class="flex flex-center" style="text-align: center">
+    <div :style="desktopIndex">
+      WITAJ <br />
 
-    <div class="fillup">
+      Aby rozpocząć będę musiał się dowiedzieć kilku podstawowych rzeczy
+
       <q-select
         square
         outlined
@@ -73,7 +70,7 @@
         <b>{{ this.ppm }} kcal</b>
         <div>aby osiągnąć cel powinieneś przyswajać</div>
         <b>{{ this.calories }} kcal</b>
-        <div class="row justify-between">
+        <div>
           <div>
             <q-banner>białko</q-banner>
             <b>{{ this.protein }} g</b>
@@ -240,6 +237,18 @@ export default defineComponent({
       setVar,
     };
   },
+
+  mounted() {
+    screen.orientation.lock(); // webkit only
+    screen.lockOrientation("portrait-primary");
+
+    if (this.$q.platform.is.mobile) {
+      this.desktopIndex = "";
+    } else {
+      this.desktopIndex = "width:50vw;";
+    }
+  },
+
   methods: {},
   data: () => ({
     meatselect: false,
@@ -283,7 +292,7 @@ export default defineComponent({
   margin-right: auto;
   width: 100px; /* Need a specific value to work */
 
-  font-family: "Candara";
+  font-family: "Times-new-roman";
   font-style: normal;
   font-weight: 400;
   font-size: 32px;
@@ -332,9 +341,5 @@ export default defineComponent({
 .result {
   border: solid 1px black;
   margin: 2%;
-}
-
-* {
-  font-family: "Courier New", Courier, monospace;
 }
 </style>

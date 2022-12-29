@@ -1,30 +1,42 @@
 <template>
   <q-page class="flex flex-center">
-    <!-- <q-select
-      use-chips
-      class="q-mt-xs q-ma-xs"
-      filled
-      label="Wybierz Partię mięśni którą chcesz poćwiczyć"
-      v-model="workoutSelect"
-      :options="workouts"
-      option-value="id"
-      option-label="id"
-      emit-value
-      @update:model-value="setWorkout(workoutSelect)"
-    />
+    <div class="fixed-top q-mt-xl" :style="wokroutSelectDekstop">
+      <q-select
+        use-chips
+        class="q-mt-xs q-ma-xs"
+        filled
+        label="Wybierz Partię mięśni którą chcesz poćwiczyć"
+        v-model="workoutSelect"
+        :options="workouts"
+        option-value="id"
+        option-label="id"
+        emit-value
+        @update:model-value="setWorkout(workoutSelect)"
+      />
 
-    <div v-for="workout in temp_workouts" :key="workout.id">
-      <div class="col-12 row border-radius: 10px 10px 0px 0px">
-        <div class="col-3">{{ workout.cw1 }}</div>
-        <div class="col-3">{{ workout.cw2 }}</div>
-        <div class="col-3">{{ workout.cw3 }}</div>
-        <div class="col">{{ workout.cw4 }}</div>
-      </div>
+      <q-virtual-scroll
+        class=""
+        style="text-align: center; max-height: 150px"
+        :items="temp_workouts"
+        separator
+        v-slot="{ item, index }"
+      >
+        <q-item :key="index" dense>
+          <q-item-section>
+            <q-item-label q-pa-xl>
+              <b> Ćwieczenie: </b> {{ item.cw1 }} <br /><br />
+              <b> Ćwieczenie: </b>{{ item.cw2 }} <br /><br />
+              <b> Ćwieczenie: </b>{{ item.cw3 }}<br /><br />
+              <b> Ćwieczenie: </b>{{ item.cw4 }} <br /><br /><b> Ćwieczenie: </b
+              >{{ item.cw5 }} <br /><br /><b> Ćwieczenie: </b>{{ item.cw6
+              }}<br /><br />
+            </q-item-label>
+          </q-item-section>
+        </q-item>
+      </q-virtual-scroll>
     </div>
-  -->
-
-    <div class="fixed-bottom" style="text-align: center; margin-bottom: 15vw">
-      <div class="q-mb-xl">
+    <div class="fixed-bottom" style="text-align: center; margin-bottom: 10vw">
+      <div class="q-mb-xl" :style="wokroutSelectDekstop">
         <q-input
           square
           outlined
@@ -64,10 +76,10 @@
         show-value
         class="stoper"
         :value="stoperTime"
-        size="70vw"
+        :size="desktopProgress"
         :color="this.colors"
       >
-        <q-avatar size="40vw"> {{ this.timerProgress }} </q-avatar>
+        <q-avatar :size="desktopProgress"> {{ this.timerProgress }} </q-avatar>
       </q-circular-progress>
     </div>
   </q-page>
@@ -143,6 +155,9 @@ export default {
 
   methods: {
     startTrening(breakLength, workoutLength, amount) {
+      breakLength = Math.round(breakLength);
+      workoutLength = Math.round(workoutLength);
+
       this.stoperTime = 0;
       this.timerProgress = 0;
       this.disable = true;
@@ -194,6 +209,8 @@ export default {
     },
 
     setWorkout(workoutSelect) {
+      this.temp_workouts = [];
+
       this.workouts.forEach((element) => {
         if (element.id == workoutSelect) {
           this.temp_workouts.push(element);
@@ -218,6 +235,17 @@ export default {
 
   mounted() {
     this.load_workouts();
+
+    if (this.$q.platform.is.mobile) {
+      this.desktopProgress = "70vw";
+    } else {
+      this.desktopProgress = "10vw";
+    }
+    if (this.$q.platform.is.mobile) {
+      this.wokroutSelectDekstop = "";
+    } else {
+      this.wokroutSelectDekstop = "margin-left: 20vw; width: 60vw";
+    }
   },
 };
 </script>

@@ -9,10 +9,10 @@
 
     <q-circular-progress
       show-value
-      class="text-light-blue q-ma-md"
+      class="text-amber-4 q-ma-md"
       :value="water"
       size="80vw"
-      color="light-blue"
+      color="amber-4"
       @click="slider()"
     />
 
@@ -40,6 +40,7 @@ export default defineComponent({
       temp_water2 = localStorage.getItem("waterLeft");
 
       this.water = Math.round(parseFloat(temp_water2) + parseFloat(temp_water));
+
       localStorage.setItem("waterLeft", this.water);
     },
 

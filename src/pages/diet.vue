@@ -36,21 +36,22 @@
       />
       <div style="text-align: center">
         <q-btn
-          class="q-mt-md q-mb-md fixed-center"
+          class="q-mt-sm q-mb-md fixed-center"
           label="Dodaj nowy produkt"
+          style="width: 300px"
           @click="openFoodArray()"
-          style="z-index: 2"
         ></q-btn>
         <q-btn
-          class="q-mt-md q-mb-md"
+          class="q-mt-xl q-mb-md fixed-center"
           label="Zobacz dzisiejsze produkty"
+          style="width: 300px"
           @click="openTodayFoodArray()"
         ></q-btn>
       </div>
     </div>
 
     <div
-      class="fixed-bottom q-mb-xl mobile-only"
+      class="fixed-bottom q-mb-xl"
       style="
         max-height: 30vw;
         text-align: center;
@@ -139,10 +140,10 @@
             />
           </div>
           <div class="q-pa-md col-xs-12 col-md-12">
-            <q-list class="rounded-borders">
+            <q-list class="rounded-borders" style="text-align: center">
               <q-btn @click="this.addYourFood = true"
-                >Dodaj swój własny produkt?
-              </q-btn>
+                >Dodaj swój własny produkt </q-btn
+              ><br />
               <b>każda pozycja oznacza 100g produktu</b>
               <b>
                 <div class="row desktop-only">
@@ -230,7 +231,7 @@
 
   <q-dialog v-model="amountArray" persistent
     ><q-card class="q-pa-md" style="width: 1800px">
-      <div>
+      <div style="text-align: center">
         <div>
           Ile chcesz dodać produktu {{ this.temp_name }}? <br />
           <b>Każda pozycja oznacza 100g produktu</b>
