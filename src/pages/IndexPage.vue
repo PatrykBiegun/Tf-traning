@@ -1,6 +1,6 @@
 <template>
   <q-page class="flex flex-center" style="text-align: center">
-    <div :style="desktopIndex">
+    <div style="width: 50vw" class="desktop-only">
       WITAJ <br />
 
       Aby rozpocząć będę musiał się dowiedzieć kilku podstawowych rzeczy
@@ -8,11 +8,11 @@
       <q-select
         square
         outlined
-        label="Płeć biologiczna"
+        label="Płeć"
         class="q-pa-sm"
         :options="genders"
         option-label="name"
-        option-value="id"
+        option-value="name"
         v-model="genderSelect"
         emit-value
       />
@@ -40,19 +40,13 @@
         square
         outlined
       />
-      <!-- <q-toggle
-        v-model="meatselect"
-        color="red"
-        label="Jesz mięso?"
-        left-label
-      /> -->
       <q-select
         square
         outlined
         label="Cel!"
         class="q-pa-sm"
         :options="goals"
-        option-value="id"
+        option-value="name"
         option-label="name"
         v-model="targetSelect"
         emit-value
@@ -84,6 +78,96 @@
             <q-banner>tłuszcze</q-banner>
             <b> {{ this.fat }} g</b>
           </div>
+          <div>
+            <q-banner>woda</q-banner>
+            <b> {{ this.water }} ml</b>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mobile-only">
+      WITAJ <br />
+
+      Aby rozpocząć będę musiał się dowiedzieć kilku podstawowych rzeczy
+
+      <q-select
+        square
+        outlined
+        label="Płeć"
+        class="q-pa-sm"
+        :options="genders"
+        option-label="name"
+        option-value="name"
+        v-model="genderSelect"
+        emit-value
+      />
+      <q-input
+        label="Wiek"
+        class="q-pa-sm"
+        v-model="age"
+        square
+        standout
+        type="number"
+      />
+      <q-input
+        label="Waga ciała"
+        type="number"
+        class="q-pa-sm"
+        v-model="weight"
+        square
+        outlined
+      />
+      <q-input
+        label="Wzrost"
+        class="q-pa-sm"
+        type="number"
+        v-model="height"
+        square
+        outlined
+      />
+      <q-select
+        square
+        outlined
+        label="Cel!"
+        class="q-pa-sm"
+        :options="goals"
+        option-value="name"
+        option-label="name"
+        v-model="targetSelect"
+        emit-value
+      />
+
+      <q-btn
+        color="secondary"
+        @click="setVar(0, genderSelect, weight, height, age, targetSelect)"
+        label="POLICZ!"
+      />
+
+      <div id="status" v-if="logg == true" class="result">
+        <div>Twoje Wyniki</div>
+        <div>Podstawowa przemiana materii</div>
+        <b>{{ this.ppm }} kcal</b>
+        <div>aby osiągnąć cel powinieneś przyswajać</div>
+        <b>{{ this.calories }} kcal</b>
+        <div>
+          <div>
+            <q-banner>białko</q-banner>
+            <b>{{ this.protein }} g</b>
+          </div>
+          <div>
+            <q-banner>węglowodany</q-banner>
+            <b>{{ this.carbs }} g</b>
+          </div>
+
+          <div>
+            <q-banner>tłuszcze</q-banner>
+            <b> {{ this.fat }} g</b>
+          </div>
+          <div>
+            <q-banner>woda</q-banner>
+            <b> {{ this.water }} ml</b>
+          </div>
         </div>
       </div>
     </div>
@@ -95,8 +179,6 @@ import { defineComponent } from "vue";
 import { ref } from "vue";
 import { useQuasar } from "quasar";
 import { onBeforeUnmount } from "vue";
-
-import { Notify } from "quasar";
 
 export default defineComponent({
   setup() {
@@ -116,15 +198,18 @@ export default defineComponent({
 
     function setVar(number, gender, weight, height, age, target) {
       if (
-        gender != 0 &&
+        gender != null &&
         weight >= 20 &&
+        weight <= 610 &&
         height >= 80 &&
+        height <= 280 &&
         age >= 8 &&
-        target != 0
+        age <= 130 &&
+        target != null
       ) {
         let ppm = 10 * weight + 6.25 * height - 5 * age + 5;
 
-        if (gender !== 1) {
+        if (gender == "kobieta") {
           ppm = ppm - 166;
         }
         if (ppm <= 0) {
@@ -134,7 +219,7 @@ export default defineComponent({
           localStorage.setItem("carbs", 0);
           localStorage.setItem("calories", 0);
         } else {
-          if (target == 1) {
+          if (target == "schudnąć") {
             localStorage.setItem("ppm", ppm);
             ppm = ppm + 100;
             let protein = (ppm * 0.23) / 4;
@@ -151,7 +236,7 @@ export default defineComponent({
             localStorage.setItem("carbs", carb);
             localStorage.setItem("calories", ppm);
             localStorage.setItem("water", ppm);
-          } else if (target == 2) {
+          } else if (target == "przytyć") {
             localStorage.setItem("ppm", ppm);
             ppm = ppm + 500;
             let protein = (ppm * 0.2) / 4;
@@ -167,7 +252,7 @@ export default defineComponent({
             localStorage.setItem("carbs", carb);
             localStorage.setItem("calories", ppm);
             localStorage.setItem("water", ppm);
-          } else if (target == 3) {
+          } else if (target == "utrzymać masę ciała") {
             localStorage.setItem("ppm", ppm);
             ppm = ppm + 250;
             let protein = (ppm * 0.2) / 4;
@@ -239,9 +324,6 @@ export default defineComponent({
   },
 
   mounted() {
-    screen.orientation.lock(); // webkit only
-    screen.lockOrientation("portrait-primary");
-
     if (this.$q.platform.is.mobile) {
       this.desktopIndex = "";
     } else {
@@ -282,62 +364,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.welcome {
-  position: absolute;
-
-  top: 3vw;
-  left: 0;
-  right: 0;
-  margin-left: auto;
-  margin-right: auto;
-  width: 100px; /* Need a specific value to work */
-
-  font-family: "Times-new-roman";
-  font-style: normal;
-  font-weight: 400;
-  font-size: 32px;
-
-  /* identical to box height */
-
-  color: #000000;
-}
-.info {
-  position: absolute;
-  top: 15vw;
-  left: 0;
-  right: 0;
-  margin-left: auto;
-  margin-right: auto;
-  width: 90vw; /* Need a specific value to work */
-
-  font-family: "Candara";
-  font-style: normal;
-  font-weight: auto;
-  font-size: auto;
-  line-height: 15px;
-  text-align: center;
-
-  color: #000000;
-}
-.fillup {
-  position: absolute;
-  top: 40vw;
-  left: 0;
-  right: 0;
-  margin-left: auto;
-  margin-right: auto;
-
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 15px;
-  /* identical to box height */
-  text-align: center;
-
-  color: #000000;
-}
-
 .result {
   border: solid 1px black;
   margin: 2%;

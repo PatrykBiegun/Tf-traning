@@ -10,7 +10,14 @@
           TF-traning
         </q-toolbar-title>
 
-        <!-- <q-btn dense flat round icon="menu" @click="toggleRightDrawer" /> -->
+        <q-btn
+          dense
+          flat
+          round
+          icon="menu"
+          @click="toggleLeftDrawer"
+          size="xl"
+        />
       </q-toolbar>
 
       <!-- <q-tabs align="left">
@@ -19,13 +26,56 @@
         <q-route-tab to="/page3" label="Page Three" />
       </q-tabs> -->
     </q-header>
-    <!--
+
     <q-drawer show-if-above v-model="leftDrawerOpen" side="left" bordered>
+      <div class="row" id="menu">
+        <q-list style="font-size: large; width: 100%" class="desktop-only">
+          <q-item clickable v-ripple to="/">Dane</q-item>
+          <q-item
+            :disable="access != 'true'"
+            clickable
+            v-ripple
+            to="/traning"
+            class="row"
+            >Trening</q-item
+          >
+          <q-item
+            :disable="access != 'true'"
+            clickable
+            v-ripple
+            to="/diet"
+            class="row"
+            >Dieta</q-item
+          >
+        </q-list>
 
-    </q-drawer> -->
-    <!--
-    <q-drawer show-if-above v-model="rightDrawerOpen" side="right" bordered>
+        <q-list style="text-align: left" class="q-gutter-md" separator>
+          <q-item
+            >Poniżej kilka kanałów, które z pewnością pomogą ci osiągnąć cel
+          </q-item>
 
+          <q-item href="https://www.youtube.com/user/monikakolakowska">
+            Monika Kołakowska
+            <q-icon name="mdi-youtube" size="sm" color="red" />
+          </q-item>
+          <q-item href="https://www.youtube.com/@trenujzkura4082">
+            KURA workout <q-icon name="mdi-youtube" size="sm" color="red" />
+          </q-item>
+          <q-item href="https://www.youtube.com/@TreningFitnessbyPaula">
+            Trening Fitness <q-icon name="mdi-youtube" size="sm" color="red" />
+          </q-item>
+          <q-item href="https://www.youtube.com/@MrAlphaFit">
+            Alsquad <q-icon name="mdi-youtube" size="sm" color="red"
+          /></q-item>
+          <q-item href="https://www.youtube.com/@CzowiekuRUSZSIE">
+            Człowieku, RUSZ SIĘ!
+            <q-icon name="mdi-youtube" size="sm" color="red" />
+          </q-item>
+        </q-list>
+      </div>
+    </q-drawer>
+
+    <!-- <q-drawer show-if-above v-model="rightDrawerOpen" side="right" bordered>
     </q-drawer> -->
     <!-- <body>
       <button @click="pushNot()">chuj</button>
@@ -35,36 +85,9 @@
       <router-view />
     </q-page-container>
 
-    <q-footer bordered class="bg-amber-10 text-white">
-      <q-toolbar>
-        <q-toolbar-title>
-          <div class="col-12 row" id="menu">
-            <q-item clickable v-ripple to="/" class="col-4 flex-center"
-              >Dane</q-item
-            >
-            <q-item
-              :disable="access != 'true'"
-              clickable
-              v-ripple
-              to="/traning"
-              class="col-4 flex-center"
-              >Trening</q-item
-            >
-            <q-item
-              :disable="access != 'true'"
-              clickable
-              v-ripple
-              to="/diet"
-              class="col-4 flex-center"
-              >Dieta</q-item
-            >
-          </div>
-        </q-toolbar-title>
-      </q-toolbar>
-    </q-footer>
     <q-footer class="q-mb-xl" v-if="shownotifications == 'true'">
       <q-toolbar class="bg-grey-3 justify-between">
-        <q-icon name="eva-bell-outline" color="primary" size="xl" />
+        <q-icon name="mdi-bell" color="primary" size="xl" />
 
         <q-btn
           @click="enableNotifications"
@@ -194,41 +217,6 @@ export default {
     },
   },
 
-  // methods: {
-  // pushNot() {
-  //   let button = document.querySelector("button");
-  //   button.addEventListener("click", () => {
-  //     Notification.requestPermission().then((perm) => {
-  //       if (perm === "granted") {
-  //         const notification = new Notification("Example notification", {
-  //           body: "mess",
-  //         });
-  //         notification.addEventListener("error", (e) => {
-  //           alert("error");
-  //         });
-  //       }
-  //     });
-  //   });
-  //   let notification;
-  //   let interval;
-  //   document.addEventListener("visibilitychange", () => {
-  //     if (document.visibilityState === "hidden") {
-  //       const leaveDate = new Date();
-  //       interval = setInterval(() => {
-  //         body: {
-  //           Math.round((new Date() - leaveDate) / 1000);
-  //         }
-  //         seconds;
-  //         tag: " nie wiem ";
-  //       });
-  //     } else {
-  //       clearInterval(interval);
-  //       notification.close();
-  //     }
-  //   });
-  // },
-  // },
-
   setup() {
     const leftDrawerOpen = ref(false);
     const rightDrawerOpen = ref(false);
@@ -252,10 +240,10 @@ export default {
   }),
 
   mounted() {
-    ScreenOrientation.lock(portrait);
-    lock(portrait);
-    screen.orientation.lock(); // webkit only
-    screen.lockOrientation("portrait-primary");
+    if (localStorage.getItem("showNotifications") == undefined) {
+      localStorage.setItem("showNotifications", true);
+    }
+
     const $q = useQuasar();
     let timer;
 
@@ -267,6 +255,10 @@ export default {
     });
     const date = new Date();
     const day = date.getDate();
+
+    if (localStorage.getItem("today") == undefined) {
+      localStorage.setItem("today", day);
+    }
 
     if (parseFloat(localStorage.getItem("today")) != day) {
       $q.loading.show({

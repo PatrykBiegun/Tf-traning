@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="com.tftraning.biegun" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>TF-traning</name>
-    <description>App by Biegun Patryk</description>
+    <description>A</description>
     <author email="dev@cordova.apache.org" href="https://cordova.apache.org">
         Apache Cordova Team
     </author>
@@ -9,5 +9,11 @@
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
     <allow-navigation href="about:*" />
-        <icon src="icon3.png" platform="android" width="57" height="57" density="mdpi" />
+    <icon density="mdpi" height="57" platform="android" src="icon3.png" width="57" />
+<!--
+    <platform name="android">
+        <preference name="orientation" value="portrait" />
+    </platform>
+-->
+    <custom-preference name="android-manifest/application/activity/@android:screenOrientation" value="portrait" />
 </widget>

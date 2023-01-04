@@ -1,6 +1,6 @@
 <template>
-  <q-page class="flex flex-center">
-    <div class="q-pa-sm q-mt-xl fullscreen" style="max-height: 40vw">
+  <q-page class="flex-center">
+    <div class="q-pa-sm" style="max-width: 80vw; margin-left: 10vw">
       <q-banner class="foodBaner"
         >Kalorie <br />
         {{ this.caloriesLeft }} / {{ this.calories }}</q-banner
@@ -34,48 +34,49 @@
         color="secondary"
         class="q-mt-sm"
       />
-      <div style="text-align: center">
+      <q-list style="text-align: center" class="q-mt-xl">
         <q-btn
-          class="q-mt-sm q-mb-md fixed-center"
+          class="q-mt-sm q-mb-md"
           label="Dodaj nowy produkt"
           style="width: 300px"
           @click="openFoodArray()"
         ></q-btn>
+        <br />
         <q-btn
-          class="q-mt-xl q-mb-md fixed-center"
+          class="q-mt-xl q-mb-md"
           label="Zobacz dzisiejsze produkty"
           style="width: 300px"
           @click="openTodayFoodArray()"
         ></q-btn>
-      </div>
-    </div>
+      </q-list>
 
-    <div
-      class="fixed-bottom q-mb-xl"
-      style="
-        max-height: 30vw;
-        text-align: center;
-        margin-bottom: 200px;
-        wdith: 100%;
-      "
-    >
-      <q-banner> <b>każda pozycja oznacza 100g produktu</b></q-banner>
-      <q-virtual-scroll
-        class=""
-        style="text-align: center; max-height: 250px"
-        :items="temp_food"
-        separator
-        v-slot="{ item, index }"
+      <div
+        class="q-mb-xl"
+        style="
+          max-height: 30vw;
+          text-align: center;
+          margin-bottom: 200px;
+          wdith: 100%;
+        "
       >
-        <q-item :key="index" dense>
-          <q-item-section>
-            <q-item-label q-pa-xl>
-              <b>{{ item.id }}</b> <br />białko: {{ item.bialko }} węgle:
-              {{ item.wegle }} tłuszcze:{{ item.tluszcze }}</q-item-label
-            >
-          </q-item-section>
-        </q-item>
-      </q-virtual-scroll>
+        <q-virtual-scroll
+          bordered
+          class=""
+          style="margin-left: 3.5vw; height: 250px; width: 70vw"
+          :items="temp_food"
+          separator
+          v-slot="{ item, index }"
+        >
+          <q-item :key="index" dense>
+            <q-item-section>
+              <q-item-label q-pa-xl>
+                <b>{{ item.id }}</b> <br />białko: {{ item.bialko }} węgle:
+                {{ item.wegle }} tłuszcze:{{ item.tluszcze }}</q-item-label
+              >
+            </q-item-section>
+          </q-item>
+        </q-virtual-scroll>
+      </div>
     </div>
   </q-page>
 
@@ -106,6 +107,7 @@
         <q-btn flat label="Cofnij" v-close-popup />
         <q-btn
           flat
+          :disable="Addname == ''"
           @click="
             openAmountArray(Addname, Addprotein, Addcarbs, Addfat, Addcalories)
           "
@@ -140,8 +142,8 @@
             />
           </div>
           <div class="q-pa-md col-xs-12 col-md-12">
-            <q-list class="rounded-borders" style="text-align: center">
-              <q-btn @click="this.addYourFood = true"
+            <q-list class="rounded-borders">
+              <q-btn @click="this.addYourFood = true" style="text-align: center"
                 >Dodaj swój własny produkt </q-btn
               ><br />
               <b>każda pozycja oznacza 100g produktu</b>
@@ -264,6 +266,8 @@
 </template>
 
 <script>
+import { useQuasar } from "quasar";
+import { onBeforeUnmount } from "vue";
 import db from "src/boot/firebase";
 import {
   snapshot,
@@ -431,11 +435,6 @@ export default defineComponent({
       });
       console.log(this.food);
     },
-
-    addnewFood(bialko) {
-      alert("dupa");
-      // this.bialko = this.bialko + bialko * this.amount;
-    },
   },
 
   setup() {
@@ -457,6 +456,46 @@ export default defineComponent({
   },
 
   mounted() {
+    const $q = useQuasar();
+    let timer;
+
+    onBeforeUnmount(() => {
+      if (timer !== void 0) {
+        clearTimeout(timer);
+        $q.loading.hide();
+      }
+    });
+
+    const date = new Date();
+    const day = date.getDate();
+
+    if (parseFloat(localStorage.getItem("today")) != day) {
+      $q.loading.show({
+        message: "<b>Nowy dzień, nowe możliwości!</b>",
+        html: true,
+      });
+
+      timer = setTimeout(() => {
+        $q.loading.hide();
+        timer = void 0;
+      }, 3000);
+      localStorage.setItem("today", day);
+      localStorage.setItem("waterLeft", 0);
+      localStorage.setItem("carbsLeft", 0);
+      localStorage.setItem("fatLeft", 0);
+      localStorage.setItem("caloriesLeft", 0);
+      localStorage.setItem("proteinLeft", 0);
+      localStorage.setItem("proteinBar", 0);
+      localStorage.setItem("fatBar", 0);
+      localStorage.setItem("caloriesBar", 0);
+      localStorage.setItem("carbsBar", 0);
+      localStorage.setItem("dailyfood", "Twoje dzisiejsze produkty!");
+
+      setTimeout(() => {
+        document.location.reload();
+      }, 3000);
+    }
+
     this.load_food();
     this.name_filter();
 
