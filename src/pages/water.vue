@@ -11,11 +11,14 @@
       class="text-amber-4 q-ma-md"
       :value="water"
       size="80vw"
-      color="amber-4"
+      color="blue"
       @click="slider()"
     />
 
-    <!-- <div class="funfact">Woda jest mokra</div> -->
+    <q-banner size="xl"
+      >Tyle dni z rzędu dałeś radę! <br />
+      <b style="font-size: 20px">{{ waterStreak }}</b>
+    </q-banner>
   </q-page>
 </template>
 
@@ -27,7 +30,7 @@ export default defineComponent({
 
   data: () => ({
     waterAmount: localStorage.getItem("water"),
-
+    waterStreak: localStorage.getItem("waterStreak"),
     water: parseFloat(localStorage.getItem("waterLeft")),
   }),
 

@@ -50,9 +50,7 @@
         </q-list>
 
         <q-list style="text-align: left" class="q-gutter-md" separator>
-          <q-item
-            >Poniżej kilka kanałów, które z pewnością pomogą ci osiągnąć cel
-          </q-item>
+          <q-item>Kanały na yt polecane przez nas </q-item>
 
           <q-item href="https://www.youtube.com/user/monikakolakowska">
             Monika Kołakowska
@@ -64,13 +62,14 @@
           <q-item href="https://www.youtube.com/@TreningFitnessbyPaula">
             Trening Fitness <q-icon name="mdi-youtube" size="sm" color="red" />
           </q-item>
-          <q-item href="https://www.youtube.com/@MrAlphaFit">
-            Alsquad <q-icon name="mdi-youtube" size="sm" color="red"
-          /></q-item>
-          <q-item href="https://www.youtube.com/@CzowiekuRUSZSIE">
-            Człowieku, RUSZ SIĘ!
-            <q-icon name="mdi-youtube" size="sm" color="red" />
-          </q-item>
+          <!-- <q-item>Twoje kanały na yt </q-item> -->
+          <q-btn
+            class="q-mt-xl q-ml-xl"
+            size="md"
+            color="primary"
+            @click="showYourStats()"
+            >zobacz swoje wyniki</q-btn
+          >
         </q-list>
       </div>
     </q-drawer>
@@ -177,6 +176,17 @@
       </q-toolbar>
     </q-footer>
   </q-layout>
+
+  <q-dialog v-model="yourStats">
+    <q-card class="q-pa-md" style="width: 1800px; text-align: center">
+      Dziękuję, używasz mojej aplikacji już {{ daysSpent }} dni
+
+      <q-banner>Treningi</q-banner>
+
+      <q-banner>Dieta</q-banner>
+      <q-banner>Woda</q-banner>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script>
@@ -198,6 +208,10 @@ export default {
     },
   },
   methods: {
+    showYourStats() {
+      this.yourStats = true;
+    },
+
     neverShowNotificationsBanner() {
       this.shownotifications = "false";
       localStorage.setItem("showNotifications", "false");
@@ -222,6 +236,8 @@ export default {
     const rightDrawerOpen = ref(false);
 
     return {
+      yourStats: ref(false),
+
       leftDrawerOpen,
       toggleLeftDrawer() {
         leftDrawerOpen.value = !leftDrawerOpen.value;
@@ -235,11 +251,47 @@ export default {
   },
 
   data: () => ({
+    daysSpent: localStorage.getItem("daysSpent"),
+    workoutsDone: localStorage.getItem("workoutsDone"),
+    caloriesEaten: localStorage.getItem("caloriesEaten"),
+    proteinsEaten: localStorage.getItem("proteinsEaten"),
+    fatEaten: localStorage.getItem("fatEaten"),
+    carbsEaten: localStorage.getItem("carbsEaten"),
+
     shownotifications: localStorage.getItem("showNotifications"),
     access: localStorage.getItem("access"),
   }),
 
   mounted() {
+    if (localStorage.getItem("daysSpent") == undefined) {
+      localStorage.setItem("daysSpent", 0);
+    }
+    if (localStorage.getItem("workoutsDone") == undefined) {
+      localStorage.setItem("workoutsDone", 0);
+    }
+    if (localStorage.getItem("caloriesEaten") == undefined) {
+      localStorage.setItem("caloriesEaten", 0);
+    }
+    if (localStorage.getItem("proteinsEaten") == undefined) {
+      localStorage.setItem("proteinsEaten", 0);
+    }
+    if (localStorage.getItem("fatEaten") == undefined) {
+      localStorage.setItem("fatEaten", 0);
+    }
+    if (localStorage.getItem("carbsEaten") == undefined) {
+      localStorage.setItem("carbsEaten", 0);
+    }
+
+    if (localStorage.getItem("dataExpand") == undefined) {
+      localStorage.setItem("dataExpand", false);
+    }
+    if (localStorage.getItem("macroExpand") == undefined) {
+      localStorage.setItem("macroExpand", true);
+    }
+    if (localStorage.getItem("waterStreak") == undefined) {
+      localStorage.setItem("waterStreak", 0);
+    }
+
     if (localStorage.getItem("showNotifications") == undefined) {
       localStorage.setItem("showNotifications", true);
     }
@@ -270,6 +322,13 @@ export default {
         $q.loading.hide();
         timer = void 0;
       }, 3000);
+
+      if (localStorage.getItem("waterLeft") >= 100) {
+        let temp_waterStreak = localStorage.getItem("waterStreak");
+        temp_waterStreak = parseFloat(temp_waterStreak) + 1;
+        localStorage.setItem("waterStreak", temp_waterStreak);
+      } else localStorage.setItem("waterStreak", 0);
+
       localStorage.setItem("today", day);
       localStorage.setItem("waterLeft", 0);
       localStorage.setItem("carbsLeft", 0);
@@ -303,5 +362,8 @@ button {
 
 * {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+q-banner {
+  font-weight: bold;
 }
 </style>

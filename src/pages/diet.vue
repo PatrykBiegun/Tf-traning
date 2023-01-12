@@ -38,14 +38,21 @@
         <q-btn
           class="q-mt-sm q-mb-md"
           label="Dodaj nowy produkt"
-          style="width: 300px"
+          style="width: 200px"
           @click="openFoodArray()"
         ></q-btn>
         <br />
         <q-btn
-          class="q-mt-xl q-mb-md"
+          class="q-mb-sm q-mt-sm"
+          label="Wyczyść makroskładniki"
+          style="width: 200px"
+          @click="resetAll()"
+        ></q-btn>
+        <br />
+        <q-btn
+          class="q-mt-md q-mb-md"
           label="Zobacz dzisiejsze produkty"
-          style="width: 300px"
+          style="width: 200px"
           @click="openTodayFoodArray()"
         ></q-btn>
       </q-list>
@@ -70,9 +77,25 @@
           <q-item :key="index" dense>
             <q-item-section>
               <q-item-label q-pa-xl>
-                <b>{{ item.id }}</b> <br />białko: {{ item.bialko }} węgle:
-                {{ item.wegle }} tłuszcze:{{ item.tluszcze }}</q-item-label
-              >
+                <b>{{ item.id }}</b> <br />kalorie: {{ item.kalorie }} białko:
+                {{ item.bialko }} węgle: {{ item.wegle }} tłuszcze:{{
+                  item.tluszcze
+                }}
+                <q-btn
+                  icon="delete"
+                  color="secondary"
+                  flat
+                  @click="
+                    deleteTodayItem(
+                      item.kalorie,
+                      item.bialko,
+                      item.wegle,
+                      item.tluszcze,
+                      index
+                    )
+                  "
+                ></q-btn
+              ></q-item-label>
             </q-item-section>
           </q-item>
         </q-virtual-scroll>
@@ -85,7 +108,7 @@
       <div v-for="food in TodaysFood" :key="food.id" type="table">
         <div class="col-md-2 col-xs-12">
           <div class="col-12 row flex mobile-only">
-            <div class="col-10">> {{ food }}</div>
+            <div class="col-10">{{ food }}</div>
           </div>
           <div class="col-md-3 col-xs-12 desktop-only q-mt-sm">>{{ food }}</div>
         </div>
@@ -294,7 +317,7 @@ export default defineComponent({
       { name: "Warzywa", kategoria: "warzywa" },
       { name: "Owoce", kategoria: "owoce" },
       { name: "Napoje", kategoria: "napoje" },
-      { name: "Fast-food", kategoria: "Fastfood" },
+      { name: "Fast-food", kategoria: "fastfood" },
     ],
     calories: localStorage.getItem("calories"),
     caloriesLeft: localStorage.getItem("caloriesLeft"),
@@ -331,6 +354,51 @@ export default defineComponent({
   }),
 
   methods: {
+    deleteTodayItem(TempCalories, TempProtein, TempCarbs, TempFat, index) {
+      (this.caloriesLeft =
+        parseFloat(this.caloriesLeft) - parseFloat(TempCalories)),
+        localStorage.setItem("caloriesLeft", this.caloriesLeft);
+      this.caloriesBar =
+        Math.round((100 * this.caloriesLeft) / this.calories) + "%";
+      localStorage.setItem("caloriesBar", this.caloriesBar);
+
+      (this.proteinLeft =
+        parseFloat(this.proteinLeft) - parseFloat(TempProtein)),
+        localStorage.setItem("proteinLeft", this.proteinLeft);
+      this.proteinBar =
+        Math.round((100 * this.proteinLeft) / this.protein) + "%";
+      localStorage.setItem("proteinBar", this.proteinBar);
+
+      (this.fatLeft = parseFloat(this.fatLeft) - parseFloat(TempFat)),
+        localStorage.setItem("fatLeft", this.fatLeft);
+      this.fatBar = Math.round((100 * this.fatLeft) / this.fat) + "%";
+      localStorage.setItem("fatBar", this.fatBar);
+
+      (this.carbsLeft = parseFloat(this.carbsLeft) - parseFloat(TempCarbs)),
+        localStorage.setItem("carbsLeft", this.carbsLeft);
+      this.carbBar = Math.round((100 * this.carbsLeft) / this.carbs) + "%";
+      localStorage.setItem("carbsBar", this.carbBar);
+
+      this.temp_food.splice(index, 1);
+      console.log(this.temp_food);
+    },
+
+    resetAll() {
+      localStorage.setItem("carbsLeft", 0);
+      localStorage.setItem("fatLeft", 0);
+      localStorage.setItem("caloriesLeft", 0);
+      localStorage.setItem("proteinLeft", 0);
+      localStorage.setItem("proteinBar", 0);
+      localStorage.setItem("fatBar", 0);
+      localStorage.setItem("caloriesBar", 0);
+      localStorage.setItem("carbsBar", 0);
+      localStorage.setItem("dailyfood", "Twoje dzisiejsze produkty!");
+
+      setTimeout(() => {
+        document.location.reload();
+      }, 1000);
+    },
+
     openTodayFoodArray() {
       let foodArray = localStorage.getItem("dailyfood");
       foodArray = foodArray.split(",");
