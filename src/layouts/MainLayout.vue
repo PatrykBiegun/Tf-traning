@@ -65,10 +65,20 @@
           <!-- <q-item>Twoje kanały na yt </q-item> -->
           <q-btn
             class="q-mt-xl q-ml-xl"
+            style="width: 80%"
             size="md"
             color="primary"
             @click="showYourStats()"
             >zobacz swoje wyniki</q-btn
+          >
+
+          <q-btn
+            class="q-ml-xl"
+            style="width: 80%"
+            size="md"
+            color="primary"
+            @click="resetTotalStats()"
+            >zresetuj wyniki</q-btn
           >
         </q-list>
       </div>
@@ -179,12 +189,71 @@
 
   <q-dialog v-model="yourStats">
     <q-card class="q-pa-md" style="width: 1800px; text-align: center">
-      Dziękuję, używasz mojej aplikacji już {{ daysSpent }} dni
+      <div v-if="this.daysSpent > 0">
+        Dziękuję, używasz mojej aplikacji już {{ daysSpent }} dni
+      </div>
+      <div v-if="this.daysSpent == 0">
+        Już od jutra będą się tutaj pojawiać twoje wyniki!
+      </div>
+      <q-item clickable v-ripple>
+        <q-item-section>
+          <q-item-label>Treningi</q-item-label>
+          <q-item-label caption
+            >Spędziłeś na treningu:
+            {{ parseFloat(workoutsDone / 60).toFixed(2) }}
+            minuty</q-item-label
+          >
+          <q-item-label caption
+            >Średnio na trening dziennie przeznaczasz:
+            <div v-if="this.daysSpent > 0 && workoutsDone > 0">
+              {{ parseFloat(workoutsDone / 60 / daysSpent).toFixed(2) }}
+              minut
+            </div></q-item-label
+          >
+        </q-item-section>
+      </q-item>
 
-      <q-banner>Treningi</q-banner>
-
-      <q-banner>Dieta</q-banner>
-      <q-banner>Woda</q-banner>
+      <q-item clickable v-ripple>
+        <q-item-section>
+          <q-item-label>Dieta</q-item-label>
+          <q-item-label caption
+            >Średnia ilość kalorii na dzień
+            <div v-if="this.daysSpent > 0 && caloriesEaten > 0">
+              {{ parseFloat(caloriesEaten / daysSpent).toFixed(2) }}
+            </div>
+          </q-item-label>
+          <q-item-label caption>
+            Średnia ilość białka na dzień:
+            <div v-if="this.daysSpent > 0 && proteinsEaten > 0">
+              {{ parseFloat(proteinsEaten / daysSpent).toFixed(2) }}
+            </div>
+          </q-item-label>
+          <q-item-label caption>
+            Średnia ilość węglowodanów na dzień:
+            <div v-if="this.daysSpent > 0 && carbsEaten > 0">
+              {{ parseFloat(carbsEaten / daysSpent).toFixed(2) }}
+            </div></q-item-label
+          >
+          <q-item-label caption>
+            Średnia ilość tłuszczy na dzień:
+            <div v-if="this.daysSpent > 0 && fatTotal > 0">
+              {{ parseFloat(fatTotal / daysSpent).toFixed(2) }}
+            </div></q-item-label
+          >
+        </q-item-section>
+      </q-item>
+      <q-item clickable v-ripple>
+        <q-item-section>
+          <q-item-label>Woda</q-item-label>
+          <!-- <q-item-label caption
+            >Średnia ilość wody na dzień {{ waterTotal }}</q-item-label
+          > -->
+          <q-item-label
+            >Twoja najdłuższa nieprzerwana seria codziennego picia wody
+            {{ longestWaterStreak }}</q-item-label
+          >
+        </q-item-section>
+      </q-item>
     </q-card>
   </q-dialog>
 </template>
@@ -208,6 +277,28 @@ export default {
     },
   },
   methods: {
+    resetTotalStats() {
+      this.$q
+        .dialog({
+          title: "Potwierdź",
+          message:
+            "Czy chcesz usunąć wszystkie statystyki dotyczące treningu i diety oraz dni?",
+          cancel: true,
+          persistent: true,
+        })
+        .onOk(() => {
+          localStorage.setItem("proteinsEaten", 0);
+          localStorage.setItem("fatTotal", 0);
+          localStorage.setItem("carbsEaten", 0);
+          localStorage.setItem("caloriesEaten", 0);
+          localStorage.setItem("workoutsDone", 0);
+          localStorage.setItem("daysSpent", 0);
+          setTimeout(() => {
+            document.location.reload();
+          }, 1000);
+        });
+    },
+
     showYourStats() {
       this.yourStats = true;
     },
@@ -255,8 +346,10 @@ export default {
     workoutsDone: localStorage.getItem("workoutsDone"),
     caloriesEaten: localStorage.getItem("caloriesEaten"),
     proteinsEaten: localStorage.getItem("proteinsEaten"),
-    fatEaten: localStorage.getItem("fatEaten"),
+    fatTotal: localStorage.getItem("fatTotal"),
     carbsEaten: localStorage.getItem("carbsEaten"),
+    longestWaterStreak: localStorage.getItem("longestWaterStreak"),
+    waterTotal: localStorage.getItem("waterTotal"),
 
     shownotifications: localStorage.getItem("showNotifications"),
     access: localStorage.getItem("access"),
@@ -275,8 +368,8 @@ export default {
     if (localStorage.getItem("proteinsEaten") == undefined) {
       localStorage.setItem("proteinsEaten", 0);
     }
-    if (localStorage.getItem("fatEaten") == undefined) {
-      localStorage.setItem("fatEaten", 0);
+    if (localStorage.getItem("fatTotal") == undefined) {
+      localStorage.setItem("fatTotal", 0);
     }
     if (localStorage.getItem("carbsEaten") == undefined) {
       localStorage.setItem("carbsEaten", 0);
@@ -296,6 +389,14 @@ export default {
       localStorage.setItem("showNotifications", true);
     }
 
+    if (localStorage.getItem("longestWaterStreak") == undefined) {
+      localStorage.setItem("longestWaterStreak", 0);
+    }
+
+    if (localStorage.getItem("waterTotal") == undefined) {
+      localStorage.setItem("waterTotal", 0);
+    }
+
     const $q = useQuasar();
     let timer;
 
@@ -306,7 +407,7 @@ export default {
       }
     });
     const date = new Date();
-    const day = date.getDate();
+    const day = date.getMinutes();
 
     if (localStorage.getItem("today") == undefined) {
       localStorage.setItem("today", day);
@@ -328,6 +429,47 @@ export default {
         temp_waterStreak = parseFloat(temp_waterStreak) + 1;
         localStorage.setItem("waterStreak", temp_waterStreak);
       } else localStorage.setItem("waterStreak", 0);
+
+      if (
+        localStorage.getItem("longestWaterStreak") <=
+        localStorage.getItem("waterStreak")
+      )
+        localStorage.setItem(
+          "longestWaterStreak",
+          localStorage.getItem("waterStreak")
+        );
+
+      localStorage.setItem(
+        "caloriesEaten",
+        parseFloat(localStorage.getItem("caloriesEaten")) +
+          parseFloat(localStorage.getItem("caloriesLeft"))
+      );
+      localStorage.setItem(
+        "proteinsEaten",
+        parseFloat(localStorage.getItem("proteinsEaten")) +
+          parseFloat(localStorage.getItem("proteinLeft"))
+      );
+      localStorage.setItem(
+        "carbsEaten",
+        parseFloat(localStorage.getItem("carbsLeft")) +
+          parseFloat(localStorage.getItem("carbsEaten"))
+      );
+      localStorage.setItem(
+        "fatTotal",
+        parseFloat(localStorage.getItem("fatLeft")) +
+          parseFloat(localStorage.getItem("fatTotal"))
+      );
+
+      localStorage.setItem(
+        "waterTotal",
+        parseFloat(localStorage.getItem("waterLeft")) +
+          parseFloat(localStorage.getItem("waterTotal"))
+      );
+
+      localStorage.setItem(
+        "daysSpent",
+        parseFloat(localStorage.getItem("daysSpent")) + 1
+      );
 
       localStorage.setItem("today", day);
       localStorage.setItem("waterLeft", 0);
@@ -362,8 +504,5 @@ button {
 
 * {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
-}
-q-banner {
-  font-weight: bold;
 }
 </style>

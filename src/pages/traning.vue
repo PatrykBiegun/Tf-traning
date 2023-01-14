@@ -204,6 +204,11 @@ export default {
               this.stoperTime =
                 parseFloat(this.stoperTime) + parseFloat(minutes);
 
+              localStorage.setItem(
+                "workoutsDone",
+                parseFloat(localStorage.getItem("workoutsDone")) + 1
+              );
+
               if (this.timerProgress != workoutLength) {
                 this.timerProgress++;
               } else {
@@ -224,6 +229,10 @@ export default {
           } else {
             this.disable = false;
             this.timerProgress = "💪";
+            localStorage.setItem(
+              "workoutsDone",
+              parseFloat(localStorage.getItem("workoutsDone")) - 1 * amount
+            );
             clearInterval(timer);
           }
         }, 1000);
