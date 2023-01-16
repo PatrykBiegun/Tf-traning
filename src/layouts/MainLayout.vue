@@ -50,7 +50,7 @@
         </q-list>
 
         <q-list style="text-align: left" class="q-gutter-md" separator>
-          <q-item>Kanały na yt polecane przez nas </q-item>
+          <q-item>Kanały na YouTube polecane przez nas </q-item>
 
           <q-item href="https://www.youtube.com/user/monikakolakowska">
             Monika Kołakowska
@@ -80,6 +80,24 @@
             @click="resetTotalStats()"
             >zresetuj wyniki</q-btn
           >
+
+          <q-btn
+            v-if="showNotificationButton == 'true'"
+            class="q-ml-xl"
+            style="width: 80%"
+            size="md"
+            color="primary"
+            @click="enableNotifications()"
+            >Włącz powiadomienia</q-btn
+          >
+          <q-btn
+            class="q-ml-xl"
+            style="width: 80%"
+            size="md"
+            color="primary"
+            @click="displayGrantedNotification()"
+            >powiadomka</q-btn
+          >
         </q-list>
       </div>
     </q-drawer>
@@ -94,12 +112,19 @@
       <router-view />
     </q-page-container>
 
-    <q-footer class="q-mb-xl" v-if="shownotifications == 'true'">
+    <q-footer
+      class="q-mb-xl"
+      v-if="
+        shownotifications == 'true' &&
+        serviceWorkerSupported &&
+        pushNotificationsSupported
+      "
+    >
       <q-toolbar class="bg-grey-3 justify-between">
         <q-icon name="mdi-bell" color="primary" size="xl" />
 
         <q-btn
-          @click="enableNotifications"
+          @click="enableNotifications()"
           label="Tak"
           color="primary"
           dense
@@ -119,6 +144,38 @@
           @click="neverShowNotificationsBanner()"
           label="Nigdy"
           color="primary"
+          class="q-px-sm"
+          dense
+          flat
+          size="md"
+        />
+      </q-toolbar>
+    </q-footer>
+    <q-footer class="q-mb-xl" v-if="showInstalation == 'true'">
+      <q-toolbar class="justify-between">
+        <q-item>Czy chcesz zainstalować TF-traning?</q-item>
+
+        <q-btn
+          @click="InstallApp()"
+          label="Tak"
+          color="white"
+          dense
+          flat
+          size="md"
+        />
+        <q-btn
+          @click="showInstalation = false"
+          label="Potem"
+          color="white"
+          class="q-px-sm"
+          dense
+          flat
+          size="md"
+        />
+        <q-btn
+          @click="neverShowInstalation()"
+          label="Nigdy"
+          color="white"
           class="q-px-sm"
           dense
           flat
@@ -243,7 +300,7 @@
         </q-item-section>
       </q-item>
       <q-item clickable v-ripple>
-        <q-item-section>
+        <q-item-section class="mobile-only">
           <q-item-label>Woda</q-item-label>
           <!-- <q-item-label caption
             >Średnia ilość wody na dzień {{ waterTotal }}</q-item-label
@@ -264,6 +321,7 @@ import { ref } from "vue";
 import { date } from "vue";
 import { useQuasar } from "quasar";
 import { onBeforeUnmount } from "vue";
+let deferredPrompt;
 
 export default {
   computed: {
@@ -277,6 +335,33 @@ export default {
     },
   },
   methods: {
+    neverShowInstalation() {
+      this.showInstalation = "false";
+      localStorage.setItem("showInstalation", "false");
+    },
+
+    InstallApp() {
+      // Hide the app provided install promotion
+      this.showInstalation = "false";
+      localStorage.setItem("showInstalation", "false");
+
+      deferredPrompt.prompt();
+
+      deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === "accepted") {
+          console.log("User accepted the install prompt");
+          this.showInstalation = "false";
+          localStorage.setItem("showInstalation", "false");
+        } else {
+          console.log("User dismissed the install prompt");
+        }
+      });
+
+      deferredPrompt = null;
+
+      deferredPrompt = null;
+    },
+
     resetTotalStats() {
       this.$q
         .dialog({
@@ -306,17 +391,152 @@ export default {
     neverShowNotificationsBanner() {
       this.shownotifications = "false";
       localStorage.setItem("showNotifications", "false");
+
+      if (localStorage.getItem("showNotificationButton") == "mode1")
+        localStorage.setItem("showNotificationButton", "true");
     },
 
     enableNotifications() {
+      if (localStorage.getItem("showNotificationButton") == "true") {
+        console.log("dupa");
+        localStorage.setItem("showNotificationButton", "false");
+      }
+
       if (this.pushNotificationsSupported) {
         Notification.requestPermission((result) => {
           console.log("result: ", result);
           this.neverShowNotificationsBanner();
+          this.displayGrantedNotification();
           if (result == "granted") {
-            // this.displayGrantedNotification()
+            this.displayGrantedNotification();
             this.checkForExistingPushSubscription();
+            console.log("powiadomienia działają!");
+          } else {
+            localStorage.setItem("showNotificationButton", "true");
           }
+        });
+      }
+    },
+
+    checkForExistingPushSubscription() {
+      if (this.serviceWorkerSupported && this.pushNotificationsSupported) {
+        let reg;
+        navigator.serviceWorker.ready
+          .then((swreg) => {
+            reg = swreg;
+            return swreg.pushManager.getSubscription();
+          })
+          .then((sub) => {
+            if (!sub) {
+              this.createPushSubscription(reg);
+            }
+          });
+      }
+    },
+
+    createPushSubscription(reg) {
+      let vapidPublicKey =
+        "BEuaVH7wuQRpj1XrYb3yKRZekc50NzFBKeR1wfDT7F1dqNlk20upwRnMhUHSdXUfZf9X_MKROlBFDpdc3H7Znlo";
+      let vapidPublicKeyConverted = this.urlBase64ToUint8Array(vapidPublicKey);
+      reg.pushManager
+        .subscribe({
+          applicationServerKey: vapidPublicKeyConverted,
+          userVisibleOnly: true,
+        })
+        .then((newSub) => {
+          console.log("newSub ", newSub);
+          let newSubData = newSub.toJSON();
+          console.log("newSubData ", newSubData);
+        });
+      // .then((response) => {
+      //   this.displayGrantedNotification();
+      // })
+      // .catch((err) => {
+      //   console.log("err: ", err);
+      // });
+    },
+
+    urlBase64ToUint8Array(base64String) {
+      const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+      const base64 = (base64String + padding)
+        .replace(/-/g, "+")
+        .replace(/_/g, "/");
+
+      const rawData = window.atob(base64);
+      const outputArray = new Uint8Array(rawData.length);
+
+      for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+      }
+      return outputArray;
+    },
+
+    slowNotyfication() {
+      timer = setTimeout(() => {
+        if (this.serviceWorkerSupported && this.pushNotificationsSupported) {
+          navigator.serviceWorker.ready.then((swreg) => {
+            swreg.showNotification("Wolne powiadomienie", {
+              body: "Thanks for subscribing!",
+              icon: "icons/icon-128x128.png",
+              image: "icons/icon-128x128.png",
+              badge: "icons/icon-128x128.png",
+              dir: "ltr",
+              lang: "en-US",
+              vibrate: [100, 50, 200],
+              tag: "confirm-notification",
+              renotify: true,
+              actions: [
+                {
+                  action: "hello",
+                  title: "Hello",
+                },
+                {
+                  action: "goodbye",
+                  title: "Goodbye",
+                },
+              ],
+            });
+          });
+        }
+        timer = void 0;
+      }, 10000);
+    },
+
+    displayGrantedNotification() {
+      // new Notification("Zasubstrybowałeś powiadomienia!", {
+      //   body: "Thanks for subscribing!",
+      //   icon: "icons/icon-128x128.png",
+      //   image: "icons/icon-128x128.png",
+      //   badge: "icons/icon-128x128.png",
+      //   dir: "ltr",
+      //   vibrate: [100, 50, 200],
+      //   tag: "confirm-notification",
+      //   renotify: true,
+      // });
+
+      if (this.serviceWorkerSupported && this.pushNotificationsSupported) {
+        navigator.serviceWorker.ready.then((swreg) => {
+          swreg.showNotification("powiadomienia działają wariacie", {
+            body: "Thanks for subscribing!",
+            icon: "icons/icon-128x128.png",
+            image: "icons/icon-128x128.png",
+            badge: "icons/icon-128x128.png",
+            dir: "ltr",
+            lang: "en-US",
+            vibrate: [100, 50, 200],
+            tag: "confirm-notification",
+            renotify: true,
+            actions: [
+              {
+                action: "hello",
+                title: "Hello",
+              },
+              {
+                action: "goodbye",
+                title: "Goodbye",
+              },
+            ],
+          });
         });
       }
     },
@@ -351,11 +571,28 @@ export default {
     longestWaterStreak: localStorage.getItem("longestWaterStreak"),
     waterTotal: localStorage.getItem("waterTotal"),
 
+    showNotificationButton: localStorage.getItem("showNotificationButton"),
     shownotifications: localStorage.getItem("showNotifications"),
+    showInstalation: localStorage.getItem("showInstalation"),
     access: localStorage.getItem("access"),
   }),
 
   mounted() {
+    window.addEventListener("beforeinstallprompt", (e) => {
+      // Prevent the mini-infobar from appearing on mobile
+      e.preventDefault();
+      // Stash the event so it can be triggered later.
+      deferredPrompt = e;
+      // Update UI notify the user they can install the PWA
+      showInstallPromotion();
+      // Optionally, send analytics event that PWA install promo was shown.
+      console.log("beforeinstallprompt event was fired.");
+    });
+
+    if (localStorage.getItem("showNotificationButton") == undefined) {
+      localStorage.setItem("showNotificationButton", "mode1");
+    }
+
     if (localStorage.getItem("daysSpent") == undefined) {
       localStorage.setItem("daysSpent", 0);
     }
@@ -388,6 +625,9 @@ export default {
     if (localStorage.getItem("showNotifications") == undefined) {
       localStorage.setItem("showNotifications", true);
     }
+    if (localStorage.getItem("showInstalation") == undefined) {
+      localStorage.setItem("showInstalation", true);
+    }
 
     if (localStorage.getItem("longestWaterStreak") == undefined) {
       localStorage.setItem("longestWaterStreak", 0);
@@ -407,7 +647,7 @@ export default {
       }
     });
     const date = new Date();
-    const day = date.getMinutes();
+    const day = date.getDate();
 
     if (localStorage.getItem("today") == undefined) {
       localStorage.setItem("today", day);
@@ -439,37 +679,44 @@ export default {
           localStorage.getItem("waterStreak")
         );
 
-      localStorage.setItem(
-        "caloriesEaten",
-        parseFloat(localStorage.getItem("caloriesEaten")) +
-          parseFloat(localStorage.getItem("caloriesLeft"))
-      );
-      localStorage.setItem(
-        "proteinsEaten",
-        parseFloat(localStorage.getItem("proteinsEaten")) +
-          parseFloat(localStorage.getItem("proteinLeft"))
-      );
-      localStorage.setItem(
-        "carbsEaten",
-        parseFloat(localStorage.getItem("carbsLeft")) +
-          parseFloat(localStorage.getItem("carbsEaten"))
-      );
-      localStorage.setItem(
-        "fatTotal",
-        parseFloat(localStorage.getItem("fatLeft")) +
-          parseFloat(localStorage.getItem("fatTotal"))
-      );
+      if (
+        localStorage.getItem("caloriesLeft") != 0 ||
+        localStorage.getItem("proteinLeft") != 0 ||
+        localStorage.getItem("carbsEaten") != 0 ||
+        localStorage.getItem("fatTotal") != 0
+      ) {
+        localStorage.setItem(
+          "caloriesEaten",
+          parseFloat(localStorage.getItem("caloriesEaten")) +
+            parseFloat(localStorage.getItem("caloriesLeft"))
+        );
+        localStorage.setItem(
+          "proteinsEaten",
+          parseFloat(localStorage.getItem("proteinsEaten")) +
+            parseFloat(localStorage.getItem("proteinLeft"))
+        );
+        localStorage.setItem(
+          "carbsEaten",
+          parseFloat(localStorage.getItem("carbsLeft")) +
+            parseFloat(localStorage.getItem("carbsEaten"))
+        );
+        localStorage.setItem(
+          "fatTotal",
+          parseFloat(localStorage.getItem("fatLeft")) +
+            parseFloat(localStorage.getItem("fatTotal"))
+        );
 
-      localStorage.setItem(
-        "waterTotal",
-        parseFloat(localStorage.getItem("waterLeft")) +
-          parseFloat(localStorage.getItem("waterTotal"))
-      );
+        localStorage.setItem(
+          "waterTotal",
+          parseFloat(localStorage.getItem("waterLeft")) +
+            parseFloat(localStorage.getItem("waterTotal"))
+        );
 
-      localStorage.setItem(
-        "daysSpent",
-        parseFloat(localStorage.getItem("daysSpent")) + 1
-      );
+        localStorage.setItem(
+          "daysSpent",
+          parseFloat(localStorage.getItem("daysSpent")) + 1
+        );
+      }
 
       localStorage.setItem("today", day);
       localStorage.setItem("waterLeft", 0);
@@ -482,10 +729,6 @@ export default {
       localStorage.setItem("caloriesBar", 0);
       localStorage.setItem("carbsBar", 0);
       localStorage.setItem("dailyfood", "Twoje dzisiejsze produkty!");
-
-      setTimeout(() => {
-        document.location.reload();
-      }, 3000);
     }
   },
 };

@@ -21,7 +21,8 @@
     "quasar": "^2.6.0",
     "register-service-worker": "^1.7.2",
     "vue": "^3.0.0",
-    "vue-router": "^4.0.0"
+    "vue-router": "^4.0.0",
+    "web-push": "^3.5.0"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.13.14",

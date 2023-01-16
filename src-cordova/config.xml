@@ -10,10 +10,5 @@
     <allow-intent href="https://*/*" />
     <allow-navigation href="about:*" />
     <icon density="mdpi" height="57" platform="android" src="icon3.png" width="57" />
-<!--
-    <platform name="android">
-        <preference name="orientation" value="portrait" />
-    </platform>
--->
     <custom-preference name="android-manifest/application/activity/@android:screenOrientation" value="portrait" />
 </widget>
