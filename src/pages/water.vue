@@ -43,6 +43,13 @@ export default defineComponent({
       this.water = Math.round(parseFloat(temp_water2) + parseFloat(temp_water));
 
       localStorage.setItem("waterLeft", this.water);
+
+      timer = setTimeout(() => {
+        $q.notify({
+          message: "Dobra robota, na dziś wystarczy! Wróć jutro",
+          color: "error",
+        });
+      }, 2000);
     },
 
     reset() {

@@ -13,25 +13,52 @@ self.addEventListener("notificationclick", (event) => {
   let notification = event.notification;
   let action = event.action;
 
-  if (action == "hello") {
-    console.log("Hello button was clicked");
-  } else if (action == "goodbye") {
-    console.log("Goodbye button was clicked");
-  } else {
+  if (action == "water") {
     event.waitUntil(
       clients.matchAll().then((clis) => {
         let clientUsingApp = clis.find((cli) => {
           return cli.visibilityState === "visible";
         });
         if (clientUsingApp) {
-          clientUsingApp.navigate(notification.data.openUrl);
+          clientUsingApp.navigate("/#/water");
           clientUsingApp.focus();
         } else {
-          clients.openWindow(notification.data.openUrl);
+          clients.openWindow("/#/water");
         }
       })
     );
+  } else if (action == "diet") {
+    event.waitUntil(
+      clients.matchAll().then((clis) => {
+        let clientUsingApp = clis.find((cli) => {
+          return cli.visibilityState === "visible";
+        });
+        if (clientUsingApp) {
+          clientUsingApp.navigate("/#/diet");
+          clientUsingApp.focus();
+        } else {
+          clients.openWindow("/#/diet");
+        }
+      })
+    );
+  } else if (action == "workout") {
+    event.waitUntil(
+      clients.matchAll().then((clis) => {
+        let clientUsingApp = clis.find((cli) => {
+          return cli.visibilityState === "visible";
+        });
+        if (clientUsingApp) {
+          clientUsingApp.navigate("/#/traning");
+          clientUsingApp.focus();
+        } else {
+          clients.openWindow("/#/traning");
+        }
+      })
+    );
+  } else if (action == "closeNotification") {
+    notification.close();
   }
+
   notification.close();
 });
 

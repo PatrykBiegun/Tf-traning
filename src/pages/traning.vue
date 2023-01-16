@@ -183,6 +183,16 @@ export default {
   },
 
   methods: {
+    playsoundToStart() {
+      const soundEffect = new Audio(require("pages/sounds/alert1.mp3"));
+      soundEffect.play();
+    },
+
+    playsoundToEnd() {
+      const soundEffect = new Audio(require("pages/sounds/alert2.mp3"));
+      soundEffect.play();
+    },
+
     startTrening(breakLength, workoutLength, amount) {
       if (breakLength > 0 && workoutLength > 0 && amount > 0) {
         breakLength = Math.round(breakLength);
@@ -196,7 +206,7 @@ export default {
         let phase = 0;
         // minutes = Math.round(minutes);
         var timer;
-
+        this.playsoundToStart();
         timer = setInterval(() => {
           if (amount != 0) {
             if (phase == 0) {
@@ -213,6 +223,7 @@ export default {
                 this.timerProgress++;
               } else {
                 phase = 1;
+                this.playsoundToEnd();
                 this.timerProgress = parseFloat(breakLength) + 1;
               }
             } else if (phase == 1) {
@@ -223,6 +234,7 @@ export default {
                 this.stoperTime = 0;
                 phase = 0;
                 amount--;
+                this.playsoundToStart();
               }
               if (this.timerProgress != 0) this.timerProgress--;
             }
@@ -281,6 +293,7 @@ export default {
   },
 };
 </script>
+
 <style scoped>
 .welcome {
   position: absolute;

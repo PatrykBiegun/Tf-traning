@@ -90,14 +90,30 @@
             @click="enableNotifications()"
             >Włącz powiadomienia</q-btn
           >
+          <!-- <q-btn
+            class="q-ml-xl"
+            style="width: 80%"
+            size="md"
+            color="primary"
+            @click="dietReminder()"
+            >powiadomka</q-btn
+          >
           <q-btn
             class="q-ml-xl"
             style="width: 80%"
             size="md"
             color="primary"
-            @click="displayGrantedNotification()"
-            >powiadomka</q-btn
+            @click="waterReminder()"
+            >powiadomka1</q-btn
           >
+          <q-btn
+            class="q-ml-xl"
+            style="width: 80%"
+            size="md"
+            color="primary"
+            @click="workoutReminder()"
+            >powiadomka2</q-btn
+          > -->
         </q-list>
       </div>
     </q-drawer>
@@ -406,10 +422,10 @@ export default {
         Notification.requestPermission((result) => {
           console.log("result: ", result);
           this.neverShowNotificationsBanner();
-          this.displayGrantedNotification();
+
           if (result == "granted") {
             this.displayGrantedNotification();
-            this.checkForExistingPushSubscription();
+            // this.checkForExistingPushSubscription();
             console.log("powiadomienia działają!");
           } else {
             localStorage.setItem("showNotificationButton", "true");
@@ -471,56 +487,89 @@ export default {
       return outputArray;
     },
 
-    slowNotyfication() {
-      timer = setTimeout(() => {
-        if (this.serviceWorkerSupported && this.pushNotificationsSupported) {
-          navigator.serviceWorker.ready.then((swreg) => {
-            swreg.showNotification("Wolne powiadomienie", {
-              body: "Thanks for subscribing!",
-              icon: "icons/icon-128x128.png",
-              image: "icons/icon-128x128.png",
-              badge: "icons/icon-128x128.png",
-              dir: "ltr",
-              lang: "en-US",
-              vibrate: [100, 50, 200],
-              tag: "confirm-notification",
-              renotify: true,
-              actions: [
-                {
-                  action: "hello",
-                  title: "Hello",
-                },
-                {
-                  action: "goodbye",
-                  title: "Goodbye",
-                },
-              ],
-            });
-          });
-        }
-        timer = void 0;
-      }, 10000);
+    waterReminder() {
+      navigator.serviceWorker.ready.then((swreg) => {
+        swreg.showNotification("Hejka, pamiętaj o piciu wody!", {
+          body: "Przejdź do aplikacji aby uzupełnić ile dziś juz wypiłeś!",
+          icon: "icons/icon-128x128.png",
+          image: "icons/water.jpg",
+
+          dir: "ltr",
+          lang: "en-US",
+          vibrate: [100, 50, 200],
+          tag: "confirm-notification",
+          renotify: true,
+          actions: [
+            {
+              action: "water",
+              title: "Przejdź to strony",
+            },
+            {
+              action: "closeNotification",
+              title: "Usuń powiadomienie",
+            },
+          ],
+        });
+      });
+    },
+
+    workoutReminder() {
+      navigator.serviceWorker.ready.then((swreg) => {
+        swreg.showNotification("Ruch to zdrowie, może mały trening?", {
+          body: "Przejdź do aplikacji i ćwicz z naszym licznikiem!",
+          icon: "icons/icon-128x128.png",
+          image: "icons/workout.jpg",
+
+          dir: "ltr",
+          lang: "en-US",
+          vibrate: [100, 50, 200],
+          tag: "confirm-notification",
+          renotify: true,
+          actions: [
+            {
+              action: "workout",
+              title: "Przejdź to strony",
+            },
+            {
+              action: "closeNotification",
+              title: "Usuń powiadomienie",
+            },
+          ],
+        });
+      });
+    },
+
+    dietReminder() {
+      navigator.serviceWorker.ready.then((swreg) => {
+        swreg.showNotification("Hej! Mam nadzieję że miałeś pyszny dzień", {
+          body: "Pamiętaj żeby uzupełnić co dzisiaj jadłeś w aplikacji!",
+          icon: "icons/icon-128x128.png",
+          image: "icons/diet.jpg",
+          dir: "ltr",
+          lang: "en-US",
+          vibrate: [100, 50, 200],
+          tag: "confirm-notification",
+          renotify: true,
+          actions: [
+            {
+              action: "diet",
+              title: "Przejdź to strony",
+            },
+            {
+              action: "closeNotification",
+              title: "Usuń powiadomienie",
+            },
+          ],
+        });
+      });
     },
 
     displayGrantedNotification() {
-      // new Notification("Zasubstrybowałeś powiadomienia!", {
-      //   body: "Thanks for subscribing!",
-      //   icon: "icons/icon-128x128.png",
-      //   image: "icons/icon-128x128.png",
-      //   badge: "icons/icon-128x128.png",
-      //   dir: "ltr",
-      //   vibrate: [100, 50, 200],
-      //   tag: "confirm-notification",
-      //   renotify: true,
-      // });
-
       if (this.serviceWorkerSupported && this.pushNotificationsSupported) {
         navigator.serviceWorker.ready.then((swreg) => {
-          swreg.showNotification("powiadomienia działają wariacie", {
-            body: "Thanks for subscribing!",
+          swreg.showNotification("Zasubkskrybowałeś powiadomienia!", {
+            body: "Pamiętaj, że apklikacja musi działać w tle abyś je otrzymywał!",
             icon: "icons/icon-128x128.png",
-            image: "icons/icon-128x128.png",
-            badge: "icons/icon-128x128.png",
             dir: "ltr",
             lang: "en-US",
             vibrate: [100, 50, 200],
@@ -528,12 +577,8 @@ export default {
             renotify: true,
             actions: [
               {
-                action: "hello",
-                title: "Hello",
-              },
-              {
-                action: "goodbye",
-                title: "Goodbye",
+                action: "closeNotification ",
+                title: "Usuń powiadomienie",
               },
             ],
           });
@@ -543,12 +588,13 @@ export default {
   },
 
   setup() {
+    let timer;
     const leftDrawerOpen = ref(false);
     const rightDrawerOpen = ref(false);
 
     return {
       yourStats: ref(false),
-
+      timer,
       leftDrawerOpen,
       toggleLeftDrawer() {
         leftDrawerOpen.value = !leftDrawerOpen.value;
@@ -570,6 +616,7 @@ export default {
     carbsEaten: localStorage.getItem("carbsEaten"),
     longestWaterStreak: localStorage.getItem("longestWaterStreak"),
     waterTotal: localStorage.getItem("waterTotal"),
+    water: parseFloat(localStorage.getItem("waterLeft")),
 
     showNotificationButton: localStorage.getItem("showNotificationButton"),
     shownotifications: localStorage.getItem("showNotifications"),
@@ -578,13 +625,28 @@ export default {
   }),
 
   mounted() {
+    setInterval(() => {
+      if (this.water <= 100) {
+        console.log(this.water);
+        this.waterReminder();
+      }
+    }, 60000 * 60 * 3);
+
+    setInterval(() => {
+      this.dietReminder();
+    }, 60000 * 60 * 4);
+
+    setInterval(() => {
+      this.workoutReminder();
+    }, 60000 * 60 * 5);
+
     window.addEventListener("beforeinstallprompt", (e) => {
       // Prevent the mini-infobar from appearing on mobile
       e.preventDefault();
       // Stash the event so it can be triggered later.
       deferredPrompt = e;
       // Update UI notify the user they can install the PWA
-      showInstallPromotion();
+
       // Optionally, send analytics event that PWA install promo was shown.
       console.log("beforeinstallprompt event was fired.");
     });
@@ -729,6 +791,10 @@ export default {
       localStorage.setItem("caloriesBar", 0);
       localStorage.setItem("carbsBar", 0);
       localStorage.setItem("dailyfood", "Twoje dzisiejsze produkty!");
+
+      setTimeout(() => {
+        document.location.reload();
+      }, 3000);
     }
   },
 };
