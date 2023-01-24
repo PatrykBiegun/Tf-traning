@@ -38,7 +38,7 @@
           <q-input
             square
             outlined
-            label="Długość przerw (sekundy)"
+            label="Długość przerwy (sekundy)"
             type="number"
             class="col-3 q-pa-sm"
             v-model="breakTime"
@@ -241,11 +241,13 @@ export default {
           } else {
             this.disable = false;
             this.timerProgress = "💪";
+
             localStorage.setItem(
               "workoutsDone",
               parseFloat(localStorage.getItem("workoutsDone")) - 1 * amount
             );
             clearInterval(timer);
+            document.location.reload();
           }
         }, 1000);
       } else {

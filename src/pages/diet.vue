@@ -16,7 +16,7 @@
       >
       <q-linear-progress :value="this.proteinBar" class="q-mt-md" />
       <q-banner class="foodBaner"
-        >Węgle <br />
+        >Węglowodany <br />
         {{ this.carbsLeft }} / {{ this.carbs }}</q-banner
       >
       <q-linear-progress
@@ -169,7 +169,7 @@
               <q-btn @click="this.addYourFood = true" style="text-align: center"
                 >Dodaj swój własny produkt </q-btn
               ><br />
-              <b>każda pozycja oznacza 100g produktu</b>
+              <b>każda pozycja oznacza 100g produktu lub 1 produkt</b>
               <b>
                 <div class="row desktop-only">
                   <div class="col-md-3 col-xs-12">Nazwa</div>
@@ -259,7 +259,7 @@
       <div style="text-align: center">
         <div>
           Ile chcesz dodać produktu {{ this.temp_name }}? <br />
-          <b>Każda pozycja oznacza 100g produktu</b>
+          <b>Każda pozycja oznacza 100g produktu lub 1 produkt</b>
         </div>
         <div class="foodBaner">
           <q-btn

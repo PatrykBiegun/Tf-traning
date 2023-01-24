@@ -8,10 +8,18 @@
 
     <q-circular-progress
       show-value
-      class="text-amber-4 q-ma-md"
+      class="text-amber-4 q-ma-md mobile-only"
       :value="water"
       size="80vw"
-      color="blue"
+      color="blue-3"
+      @click="slider()"
+    />
+    <q-circular-progress
+      show-value
+      class="text-amber-4 q-ma-md desktop-only"
+      :value="water"
+      size="40vw"
+      color="blue-3"
       @click="slider()"
     />
 
@@ -44,16 +52,13 @@ export default defineComponent({
 
       localStorage.setItem("waterLeft", this.water);
 
-      timer = setTimeout(() => {
-        $q.notify({
-          message: "Dobra robota, na dziś wystarczy! Wróć jutro",
+      if (this.water > 100) {
+        this.$q.notify({
+          message: "Na dzisiaj juz wystarczy! Wróć jutro",
+
           color: "error",
         });
-      }, 2000);
-    },
-
-    reset() {
-      localStorage.setItem("waterLeft", 0);
+      }
     },
   },
 });

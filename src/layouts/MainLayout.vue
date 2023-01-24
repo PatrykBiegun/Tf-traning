@@ -47,6 +47,14 @@
             class="row"
             >Dieta</q-item
           >
+          <q-item
+            :disable="access != 'true'"
+            clickable
+            v-ripple
+            to="/water"
+            class="row"
+            >Woda</q-item
+          >
         </q-list>
 
         <q-list style="text-align: left" class="q-gutter-md" separator>
@@ -90,7 +98,8 @@
             @click="enableNotifications()"
             >Włącz powiadomienia</q-btn
           >
-          <!-- <q-btn
+
+          <q-btn
             class="q-ml-xl"
             style="width: 80%"
             size="md"
@@ -113,7 +122,7 @@
             color="primary"
             @click="workoutReminder()"
             >powiadomka2</q-btn
-          > -->
+          >
         </q-list>
       </div>
     </q-drawer>
@@ -316,7 +325,7 @@
         </q-item-section>
       </q-item>
       <q-item clickable v-ripple>
-        <q-item-section class="mobile-only">
+        <q-item-section>
           <q-item-label>Woda</q-item-label>
           <!-- <q-item-label caption
             >Średnia ilość wody na dzień {{ waterTotal }}</q-item-label
@@ -504,13 +513,15 @@ export default {
               action: "water",
               title: "Przejdź to strony",
             },
-            {
-              action: "closeNotification",
-              title: "Usuń powiadomienie",
-            },
+            // {
+            //   action: "closeNotification",
+            //   title: "Usuń powiadomienie",
+            // },
           ],
         });
       });
+
+      document.location.reload();
     },
 
     workoutReminder() {
@@ -530,13 +541,15 @@ export default {
               action: "workout",
               title: "Przejdź to strony",
             },
-            {
-              action: "closeNotification",
-              title: "Usuń powiadomienie",
-            },
+            // {
+            //   action: "closeNotification",
+            //   title: "Usuń powiadomienie",
+            // },
           ],
         });
       });
+
+      document.location.reload();
     },
 
     dietReminder() {
@@ -555,13 +568,15 @@ export default {
               action: "diet",
               title: "Przejdź to strony",
             },
-            {
-              action: "closeNotification",
-              title: "Usuń powiadomienie",
-            },
+            // {
+            //   action: "closeNotification",
+            //   title: "Usuń powiadomienie",
+            // },
           ],
         });
       });
+
+      document.location.reload();
     },
 
     displayGrantedNotification() {
@@ -584,6 +599,8 @@ export default {
           });
         });
       }
+
+      document.location.reload();
     },
   },
 
@@ -608,6 +625,7 @@ export default {
   },
 
   data: () => ({
+    notificationNumber: localStorage.getItem("notificationNumber"),
     daysSpent: localStorage.getItem("daysSpent"),
     workoutsDone: localStorage.getItem("workoutsDone"),
     caloriesEaten: localStorage.getItem("caloriesEaten"),
@@ -625,20 +643,27 @@ export default {
   }),
 
   mounted() {
+    this.$q.notify({
+      message: "Witaj ponownie!",
+
+      color: "primary",
+    });
+    // let NotiTimer;
+
     setInterval(() => {
       if (this.water <= 100) {
         console.log(this.water);
         this.waterReminder();
+      } else if (this.notificationNumber == "0") {
+        localStorage.setItem("notificationNumber", "1");
+        this.dietReminder();
+      } else if (this.notificationNumber == "1") {
+        localStorage.setItem("notificationNumber", "0");
+        this.workoutReminder();
+      } else {
+        this.dietReminder();
       }
-    }, 60000 * 60 * 3);
-
-    setInterval(() => {
-      this.dietReminder();
-    }, 60000 * 60 * 4);
-
-    setInterval(() => {
-      this.workoutReminder();
-    }, 60000 * 60 * 5);
+    }, 60000 * 5);
 
     window.addEventListener("beforeinstallprompt", (e) => {
       // Prevent the mini-infobar from appearing on mobile
@@ -650,6 +675,10 @@ export default {
       // Optionally, send analytics event that PWA install promo was shown.
       console.log("beforeinstallprompt event was fired.");
     });
+
+    if (localStorage.getItem("notificationNumber") == undefined) {
+      localStorage.setItem("notificationNumber", "0");
+    }
 
     if (localStorage.getItem("showNotificationButton") == undefined) {
       localStorage.setItem("showNotificationButton", "mode1");

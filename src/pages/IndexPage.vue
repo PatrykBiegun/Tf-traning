@@ -239,7 +239,7 @@ export default defineComponent({
               ppm = ppm - 166;
             }
             if (ppm <= 0) {
-              ppm = "błąd, prowadz prawidłowe wartości";
+              ppm = "błąd, wprowadź prawidłowe wartości";
               localStorage.setItem("protein", 0);
               localStorage.setItem("fat", 0);
               localStorage.setItem("carbs", 0);

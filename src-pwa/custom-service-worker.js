@@ -57,6 +57,20 @@ self.addEventListener("notificationclick", (event) => {
     );
   } else if (action == "closeNotification") {
     notification.close();
+  } else {
+    event.waitUntil(
+      clients.matchAll().then((clis) => {
+        let clientUsingApp = clis.find((cli) => {
+          return cli.visibilityState === "visible";
+        });
+        if (clientUsingApp) {
+          clientUsingApp.navigate(/#/);
+          clientUsingApp.focus();
+        } else {
+          clients.openWindow(/#/);
+        }
+      })
+    );
   }
 
   notification.close();
