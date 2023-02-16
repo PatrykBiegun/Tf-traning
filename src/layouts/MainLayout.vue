@@ -99,7 +99,7 @@
             >Włącz powiadomienia</q-btn
           >
 
-          <q-btn
+          <!-- <q-btn
             class="q-ml-xl"
             style="width: 80%"
             size="md"
@@ -122,7 +122,7 @@
             color="primary"
             @click="workoutReminder()"
             >powiadomka2</q-btn
-          >
+          > -->
         </q-list>
       </div>
     </q-drawer>

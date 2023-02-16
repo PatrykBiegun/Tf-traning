@@ -1,10 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 import * as firebase from "./firebase";
-// import { getToken } from "firebase/messaging";
-// import { getMessaging } from "firebase/messaging/sw";
-// import { onMessage } from "firebase/messaging";
-// import { snapshot } from "firebase/messaging";
+
 const firebaseConfig = {
   apiKey: "AIzaSyD2X2lpPHA0GtJzmn14L40Chp5NIfvNxZ8",
 
@@ -40,23 +37,3 @@ getDocs(colRef).then((snapshot) => {
 });
 
 export default db;
-
-// const messaging = getMessaging(app);
-
-// getToken(messaging, {
-//   vapidKey:
-//     "BAl7RyuIaWI5gdg_kD0bM7ceyzzWIlt65JWYOOgsSyH-UBwQuHY3XPINPXVVJ9UT-UGNhfWSuA7yorXv2XDhAjU",
-// });
-
-// function requestPermission() {
-//   console.log("Requesting permission...");
-//   Notification.requestPermission().then((permission) => {
-//     if (permission === "granted") {
-//       console.log("Notification permission granted.");
-//     }
-//   });
-// }
-
-// onMessage(messaging, (payload) => {
-//   console.log("Message received. ", payload);
-// });

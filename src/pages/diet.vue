@@ -433,14 +433,7 @@ export default defineComponent({
           parseFloat(this.temp_carbs) + parseFloat(this.carbsLeft);
         this.fatLeft = parseFloat(this.temp_fat) + parseFloat(this.fatLeft);
       }
-      // , proteinEaten, carbsEaten, fatEaten;
 
-      //   caloriesEaten:
-      // proteinsEaten: localStorage.getItem("proteinsEaten"),
-      // fatEaten: localStorage.getItem("fatEaten"),
-      // carbsEaten: localStorage.getItem("carbsEaten"),
-
-      console.log(localStorage.getItem("dailyfood"));
       this.caloriesBar =
         Math.round((100 * this.caloriesLeft) / this.calories) + "%";
       this.proteinBar =
@@ -497,15 +490,7 @@ export default defineComponent({
       this.temp_carbs = carbs;
       this.temp_fat = fat;
       this.temp_protein = protein;
-      // console.log(
-      //   this.temp_name,
-      //   this.temp_calories,
-      //   this.temp_carbs,
-      //   this.temp_fat,
-      //   this.temp_protein
-      // );
 
-      this.temp_calories;
       this.amountArray = true;
     },
 
@@ -549,36 +534,6 @@ export default defineComponent({
       }
     });
 
-    // const date = new Date();
-    // const day = date.getDate();
-
-    // if (parseFloat(localStorage.getItem("today")) != day) {
-    //   $q.loading.show({
-    //     message: "<b>Nowy dzień, nowe możliwości!</b>",
-    //     html: true,
-    //   });
-
-    //   timer = setTimeout(() => {
-    //     $q.loading.hide();
-    //     timer = void 0;
-    //   }, 3000);
-    //   localStorage.setItem("today", day);
-    //   localStorage.setItem("waterLeft", 0);
-    //   localStorage.setItem("carbsLeft", 0);
-    //   localStorage.setItem("fatLeft", 0);
-    //   localStorage.setItem("caloriesLeft", 0);
-    //   localStorage.setItem("proteinLeft", 0);
-    //   localStorage.setItem("proteinBar", 0);
-    //   localStorage.setItem("fatBar", 0);
-    //   localStorage.setItem("caloriesBar", 0);
-    //   localStorage.setItem("carbsBar", 0);
-    //   localStorage.setItem("dailyfood", "Twoje dzisiejsze produkty!");
-
-    //   setTimeout(() => {
-    //     document.location.reload();
-    //   }, 3000);
-    // }
-
     this.load_food();
     this.name_filter();
 
@@ -593,12 +548,6 @@ export default defineComponent({
 
 <style scoped>
 .foodBaner {
-  /* background-color: aquamarine; */
   text-align: center;
 }
-/* .temp_foodShow {
-  margin-top: 50vw;
-  width: 80vw;
-  text-align: center;
-} */
 </style>

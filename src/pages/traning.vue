@@ -38,7 +38,7 @@
           <q-input
             square
             outlined
-            label="Długość przerwy (sekundy)"
+            label="Długość przerw (sekundy)"
             type="number"
             class="col-3 q-pa-sm"
             v-model="breakTime"
@@ -193,7 +193,9 @@ export default {
       soundEffect.play();
     },
 
+    // start traning
     startTrening(breakLength, workoutLength, amount) {
+      //check data
       if (breakLength > 0 && workoutLength > 0 && amount > 0) {
         breakLength = Math.round(breakLength);
         workoutLength = Math.round(workoutLength);
@@ -201,10 +203,12 @@ export default {
         this.stoperTime = 0;
         this.timerProgress = 0;
         this.disable = true;
+
+        //set length
         let minutes = (1 * 100) / workoutLength;
         let breakminutes = (1 * 100) / breakLength;
         let phase = 0;
-        // minutes = Math.round(minutes);
+
         var timer;
         this.playsoundToStart();
         timer = setInterval(() => {
